@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#C8922A">
-<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PeptiLab">
 <link rel="manifest" href="manifest.json">
@@ -25,8 +25,6 @@
 html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;font-size:14px;min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
 h1,h2,h3{font-family:'Cormorant Garamond',serif}
 img{display:block}
-
-/* HEADER */
 .header{background:var(--bg2);border-bottom:1px solid var(--border-gold);padding:10px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:100}
 .logo-wrap{width:46px;height:46px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .logo-wrap img{width:100%;height:100%;object-fit:contain}
@@ -35,33 +33,23 @@ img{display:block}
 .header-stats{margin-left:auto;text-align:right;flex-shrink:0}
 .header-stats .stat-val{font-size:16px;font-weight:600;color:var(--gold-light);font-family:'Cormorant Garamond',serif}
 .header-stats .stat-lbl{font-size:9px;color:var(--text3);letter-spacing:2px;text-transform:uppercase}
-
-/* NAV TABS */
 .nav-tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none}
 .nav-tabs::-webkit-scrollbar{display:none}
-.nav-tab{flex:1;min-width:75px;padding:10px 6px;text-align:center;font-size:10px;font-weight:500;letter-spacing:1.2px;text-transform:uppercase;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+.nav-tab{flex:1;min-width:65px;padding:10px 4px;text-align:center;font-size:9px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
 .nav-tab.active{color:var(--gold);border-bottom-color:var(--gold)}
 .nav-tab i{display:block;font-size:17px;margin-bottom:2px}
-
-/* PAGES */
 .page{display:none;padding:16px;animation:fadeIn .2s ease}
 .page.active{display:block}
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-
-/* SECTION TITLE */
 .sec-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:var(--text);margin-bottom:2px}
 .sec-sub{font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px}
 .gold-line{width:36px;height:1px;background:var(--gold);margin-bottom:16px}
-
-/* OPERATOR SELECTOR */
 .operator-wrap{background:var(--bg3);border:1px solid var(--border-gold);border-radius:var(--radius);padding:12px;margin-bottom:16px}
 .operator-label{font-size:10px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px}
 .operator-chips{display:flex;gap:8px;flex-wrap:wrap}
-.op-chip{padding:7px 14px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid var(--border);color:var(--text3);cursor:pointer;transition:all .2s;letter-spacing:.5px}
+.op-chip{padding:7px 14px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid var(--border);color:var(--text3);cursor:pointer;transition:all .2s;letter-spacing:.5px;background:transparent}
 .op-chip:hover{border-color:var(--border-gold);color:var(--text2)}
 .op-chip.active{background:rgba(200,146,42,0.15);border-color:var(--gold);color:var(--gold-light)}
-
-/* OPERATION TYPE CARDS */
 .op-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
 .op-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:14px 12px;cursor:pointer;transition:all .2s;text-align:center}
 .op-card:hover{border-color:var(--border-gold);background:var(--bg4)}
@@ -73,8 +61,6 @@ img{display:block}
 .op-card.compra i{color:#2196F3}
 .op-card.devolucion i{color:#FF9800}
 .op-card.perdida i{color:#F44336}
-
-/* PRODUCT LIST (modal) */
 .product-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;max-height:55vh;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
 .prod-item{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:11px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .15s}
 .prod-item:hover{border-color:var(--border-gold)}
@@ -84,8 +70,6 @@ img{display:block}
 .prod-name{font-size:13px;font-weight:500;color:var(--text)}
 .prod-dose{font-size:11px;color:var(--text3)}
 .prod-price{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--gold-light);font-weight:500;white-space:nowrap}
-
-/* CART */
 .cart-item{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px}
 .cart-item-header{display:flex;align-items:flex-start;gap:8px;margin-bottom:10px}
 .cart-item-name{flex:1;font-size:13px;font-weight:500;line-height:1.3}
@@ -103,8 +87,6 @@ img{display:block}
 .qty-btn{width:28px;height:28px;border-radius:6px;background:var(--bg4);border:1px solid var(--border);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .15s;flex-shrink:0}
 .qty-btn:hover{border-color:var(--gold);color:var(--gold)}
 .qty-val{font-size:15px;font-weight:600;min-width:28px;text-align:center;color:var(--gold-light)}
-
-/* TOTALS */
 .total-box{background:var(--bg3);border:1px solid var(--border-gold);border-radius:var(--radius);padding:16px;margin:14px 0}
 .total-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0}
 .total-row .lbl{font-size:12px;color:var(--text2)}
@@ -112,16 +94,12 @@ img{display:block}
 .total-row.grand .lbl{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--text)}
 .total-row.grand .val{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--gold-light);font-weight:600}
 .divider{height:1px;background:var(--border);margin:8px 0}
-
-/* BUTTONS */
 .btn{width:100%;padding:13px;border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .2s;border:none}
 .btn-primary{background:linear-gradient(135deg,var(--gold-dim),var(--gold));color:#0A0A0A}
 .btn-primary:hover{opacity:.88;transform:translateY(-1px)}
 .btn-primary:disabled{opacity:.35;cursor:not-allowed;transform:none}
 .btn-secondary{background:transparent;border:1px solid var(--border);color:var(--text2);margin-top:8px}
 .btn-secondary:hover{border-color:var(--gold);color:var(--gold)}
-
-/* INVENTORY PAGE */
 .inv-filter{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
 .inv-filter-btn{padding:5px 12px;border-radius:20px;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border:1px solid var(--border);color:var(--text3);background:transparent;transition:all .2s}
 .inv-filter-btn.active{border-color:var(--gold);color:var(--gold);background:rgba(200,146,42,0.08)}
@@ -138,8 +116,6 @@ img{display:block}
 .stock-ok{background:rgba(26,122,74,0.2);color:#4CAF50}
 .stock-low{background:rgba(184,120,32,0.2);color:#FF9800}
 .stock-out{background:rgba(192,57,43,0.2);color:#F44336}
-
-/* HISTORY */
 .hist-filters{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
 .hist-filters::-webkit-scrollbar{display:none}
 .hist-filter-btn{padding:5px 12px;border-radius:20px;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border:1px solid var(--border);color:var(--text3);background:transparent;transition:all .2s;white-space:nowrap;flex-shrink:0}
@@ -157,50 +133,35 @@ img{display:block}
 .hist-products{font-size:12px;color:var(--text2);margin-bottom:4px;line-height:1.5}
 .hist-total{font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--gold-light)}
 .hist-comment{font-size:11px;color:var(--text3);margin:4px 0;padding:6px 8px;background:rgba(184,120,32,0.08);border-radius:6px;border-left:2px solid var(--warning);line-height:1.4}
-
-/* CATALOG */
 .cat-group{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px}
 .cat-group-name{font-size:14px;font-weight:600;margin-bottom:10px;color:var(--text)}
 .cat-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-top:1px solid var(--border)}
 .cat-dose{font-size:12px;color:var(--text3)}
 .cat-price{font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--gold-light);font-weight:500}
-
-/* MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
 .modal-overlay.open{opacity:1;pointer-events:all}
 .modal{background:var(--bg2);border:1px solid var(--border-gold);border-top-left-radius:20px;border-top-right-radius:20px;padding:20px 16px 32px;width:100%;max-height:88vh;overflow-y:auto;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1)}
 .modal-overlay.open .modal{transform:translateY(0)}
 .modal-handle{width:40px;height:3px;background:var(--border);border-radius:2px;margin:0 auto 16px}
 .modal-title{font-family:'Cormorant Garamond',serif;font-size:18px;margin-bottom:12px}
-
-/* SEARCH */
 .search-wrap{position:relative;margin-bottom:12px}
 .search-wrap i{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:16px;pointer-events:none}
 .search-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:9px 10px 9px 34px;color:var(--text);font-family:'Jost',sans-serif;font-size:13px}
 .search-input:focus{outline:none;border-color:var(--border-gold)}
 .search-input::placeholder{color:var(--text3)}
-
-/* EMPTY STATE */
 .empty-state{text-align:center;padding:36px 20px;color:var(--text3)}
 .empty-state i{font-size:36px;margin-bottom:10px;display:block;opacity:.4}
 .empty-state p{font-size:12px;line-height:1.5}
-
-/* TOAST */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg3);border:1px solid var(--border-gold);border-radius:10px;padding:10px 20px;font-size:12px;color:var(--gold);z-index:500;opacity:0;transition:all .3s;white-space:nowrap;pointer-events:none;max-width:90vw;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-/* UTILS */
-.mt-8{margin-top:8px}.mt-12{margin-top:12px}
-.warn-banner{background:rgba(192,57,43,0.12);border:1px solid rgba(192,57,43,0.3);border-radius:8px;padding:10px 12px;font-size:11px;color:#EF9A9A;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.sb-input{width:100%;background:var(--bg4);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'Jost',sans-serif;font-size:13px}
+.sb-input:focus{outline:none;border-color:var(--border-gold)}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <div class="header">
-  <div class="logo-wrap">
-    <img src="public/logo.png" alt="PeptiLab Logo">
-  </div>
+  <div class="logo-wrap"><img src="public/logo.png" alt="PeptiLab"></div>
   <div class="header-title">
     <h1>PEPTI<span style="color:var(--gold)">LAB</span></h1>
     <span>Science · Quality · Results</span>
@@ -211,34 +172,21 @@ img{display:block}
   </div>
 </div>
 
-<!-- NAV -->
 <div class="nav-tabs">
-  <div class="nav-tab active" onclick="goPage('nueva')" id="tab-nueva">
-    <i class="ti ti-plus"></i>Nueva Op.
-  </div>
-  <div class="nav-tab" onclick="goPage('inventario')" id="tab-inventario">
-    <i class="ti ti-package"></i>Inventario
-  </div>
-  <div class="nav-tab" onclick="goPage('historial')" id="tab-historial">
-    <i class="ti ti-history"></i>Historial
-  </div>
-  <div class="nav-tab" onclick="goPage('catalogo')" id="tab-catalogo">
-    <i class="ti ti-tag"></i>Catálogo
-  </div>
-  <div class="nav-tab" onclick="goPage('ajustes')" id="tab-ajustes">
-    <i class="ti ti-settings"></i>Ajustes
-  </div>
+  <div class="nav-tab active" onclick="goPage('nueva')" id="tab-nueva"><i class="ti ti-plus"></i>Nueva Op.</div>
+  <div class="nav-tab" onclick="goPage('inventario')" id="tab-inventario"><i class="ti ti-package"></i>Inventario</div>
+  <div class="nav-tab" onclick="goPage('historial')" id="tab-historial"><i class="ti ti-history"></i>Historial</div>
+  <div class="nav-tab" onclick="goPage('catalogo')" id="tab-catalogo"><i class="ti ti-tag"></i>Catalogo</div>
+  <div class="nav-tab" onclick="goPage('ajustes')" id="tab-ajustes"><i class="ti ti-settings"></i>Ajustes</div>
 </div>
 
-<!-- PAGE: NUEVA OPERACIÓN -->
+<!-- NUEVA OPERACION -->
 <div class="page active" id="page-nueva">
-  <div class="sec-title">Nueva Operación</div>
+  <div class="sec-title">Nueva Operacion</div>
   <div class="sec-sub">Registro de movimiento de inventario</div>
   <div class="gold-line"></div>
-
-  <!-- OPERATOR -->
   <div class="operator-wrap">
-    <div class="operator-label"><i class="ti ti-user" style="font-size:14px"></i> ¿Quién registra esta operación?</div>
+    <div class="operator-label"><i class="ti ti-user" style="font-size:14px"></i> Quien registra esta operacion?</div>
     <div class="operator-chips">
       <div class="op-chip" onclick="selectOperator('Wendy')" id="oper-Wendy">Wendy</div>
       <div class="op-chip" onclick="selectOperator('David')" id="oper-David">David</div>
@@ -246,73 +194,51 @@ img{display:block}
       <div class="op-chip" onclick="selectOperator('Carlos')" id="oper-Carlos">Carlos</div>
     </div>
   </div>
-
-  <!-- OPERATION TYPE -->
-  <div style="font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px">Tipo de Operación</div>
+  <div style="font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px">Tipo de Operacion</div>
   <div class="op-grid">
     <div class="op-card venta" onclick="selectOpType('venta')" id="op-venta">
       <i class="ti ti-currency-dollar"></i>
-      <div class="op-name">Venta</div>
-      <div class="op-desc">Salida de inventario</div>
+      <div class="op-name">Venta</div><div class="op-desc">Salida de inventario</div>
     </div>
     <div class="op-card compra" onclick="selectOpType('compra')" id="op-compra">
       <i class="ti ti-truck-delivery"></i>
-      <div class="op-name">Compra</div>
-      <div class="op-desc">Entrada de inventario</div>
+      <div class="op-name">Compra</div><div class="op-desc">Entrada de inventario</div>
     </div>
     <div class="op-card devolucion" onclick="selectOpType('devolucion')" id="op-devolucion">
       <i class="ti ti-refresh"></i>
-      <div class="op-name">Devolución</div>
-      <div class="op-desc">Retorno al inventario</div>
+      <div class="op-name">Devolucion</div><div class="op-desc">Retorno al inventario</div>
     </div>
     <div class="op-card perdida" onclick="selectOpType('perdida')" id="op-perdida">
       <i class="ti ti-alert-triangle"></i>
-      <div class="op-name">Pérdida</div>
-      <div class="op-desc">Baja de inventario</div>
+      <div class="op-name">Perdida</div><div class="op-desc">Baja de inventario</div>
     </div>
   </div>
-
   <div id="op-form" style="display:none">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-      <div style="font-size:11px;font-weight:600;color:var(--text2);letter-spacing:1px">PRODUCTOS EN LA OPERACIÓN</div>
+      <div style="font-size:11px;font-weight:600;color:var(--text2);letter-spacing:1px">PRODUCTOS EN LA OPERACION</div>
       <button onclick="openProductModal()" style="background:transparent;border:1px solid var(--border-gold);color:var(--gold);padding:6px 14px;border-radius:8px;cursor:pointer;font-size:11px;font-weight:600;letter-spacing:1px;font-family:'Jost',sans-serif">+ AGREGAR</button>
     </div>
-
     <div id="cart-container"></div>
     <div class="empty-state" id="cart-empty" style="padding:24px 20px">
-      <i class="ti ti-shopping-cart-off"></i>
-      <p>Ningún producto agregado aún</p>
+      <i class="ti ti-shopping-cart-off"></i><p>Ningun producto agregado aun</p>
     </div>
-
     <div id="total-box-wrap" style="display:none">
       <div class="total-box">
-        <div class="total-row">
-          <span class="lbl">Operador</span>
-          <span class="val" id="total-operator" style="color:var(--gold)">—</span>
-        </div>
-        <div class="total-row">
-          <span class="lbl">Productos distintos</span>
-          <span class="val" id="sub-items">0</span>
-        </div>
-        <div class="total-row">
-          <span class="lbl">Total unidades</span>
-          <span class="val" id="sub-units">0</span>
-        </div>
+        <div class="total-row"><span class="lbl">Operador</span><span class="val" id="total-operator" style="color:var(--gold)">—</span></div>
+        <div class="total-row"><span class="lbl">Productos distintos</span><span class="val" id="sub-items">0</span></div>
+        <div class="total-row"><span class="lbl">Total unidades</span><span class="val" id="sub-units">0</span></div>
         <div class="divider"></div>
-        <div class="total-row grand">
-          <span class="lbl">Total USD</span>
-          <span class="val" id="grand-total">$0.00</span>
-        </div>
+        <div class="total-row grand"><span class="lbl">Total USD</span><span class="val" id="grand-total">$0.00</span></div>
       </div>
       <button class="btn btn-primary" onclick="confirmOp()" id="confirm-btn">
-        <i class="ti ti-check" style="vertical-align:-2px;margin-right:6px"></i>CONFIRMAR OPERACIÓN
+        <i class="ti ti-check" style="vertical-align:-2px;margin-right:6px"></i>CONFIRMAR OPERACION
       </button>
       <button class="btn btn-secondary" onclick="clearCart()">CANCELAR</button>
     </div>
   </div>
 </div>
 
-<!-- PAGE: INVENTARIO -->
+<!-- INVENTARIO -->
 <div class="page" id="page-inventario">
   <div class="sec-title">Inventario Actual</div>
   <div class="sec-sub">Estado del stock en tiempo real</div>
@@ -326,7 +252,7 @@ img{display:block}
   <div id="inv-list"></div>
 </div>
 
-<!-- PAGE: HISTORIAL -->
+<!-- HISTORIAL -->
 <div class="page" id="page-historial">
   <div class="sec-title">Historial</div>
   <div class="sec-sub">Registro completo de operaciones</div>
@@ -336,75 +262,61 @@ img{display:block}
     <button class="hist-filter-btn" onclick="filterHist('venta',this)">Ventas</button>
     <button class="hist-filter-btn" onclick="filterHist('compra',this)">Compras</button>
     <button class="hist-filter-btn" onclick="filterHist('devolucion',this)">Devoluciones</button>
-    <button class="hist-filter-btn" onclick="filterHist('perdida',this)">Pérdidas</button>
+    <button class="hist-filter-btn" onclick="filterHist('perdida',this)">Perdidas</button>
   </div>
   <div id="hist-list"></div>
 </div>
 
-<!-- PAGE: CATÁLOGO -->
+<!-- CATALOGO -->
 <div class="page" id="page-catalogo">
-  <div class="sec-title">Catálogo de Precios</div>
-  <div class="sec-sub">Lista oficial — precios en USD</div>
+  <div class="sec-title">Catalogo de Precios</div>
+  <div class="sec-sub">Lista oficial en USD</div>
   <div class="gold-line"></div>
   <div id="cat-list"></div>
 </div>
 
-<!-- PAGE: AJUSTES -->
+<!-- AJUSTES -->
 <div class="page" id="page-ajustes">
   <div class="sec-title">Ajustes</div>
-  <div class="sec-sub">Configuración de base de datos</div>
+  <div class="sec-sub">Configuracion de base de datos</div>
   <div class="gold-line"></div>
-
-  <!-- STATUS -->
   <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:16px;display:flex;align-items:center;gap:12px">
     <div id="sb-status-dot" style="width:10px;height:10px;border-radius:50%;background:#F44336;flex-shrink:0"></div>
     <div>
-      <div id="sb-status-text" style="font-size:13px;font-weight:500">Sin conexión a base de datos</div>
+      <div id="sb-status-text" style="font-size:13px;font-weight:500">Sin conexion a base de datos</div>
       <div style="font-size:11px;color:var(--text3);margin-top:2px">Los datos se guardan localmente en este dispositivo</div>
     </div>
   </div>
-
-  <!-- SUPABASE CONFIG -->
   <div style="background:var(--bg3);border:1px solid var(--border-gold);border-radius:var(--radius);padding:16px;margin-bottom:16px">
-    <div style="font-size:11px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:6px">
-      <i class="ti ti-database" style="font-size:14px"></i> Configuración Supabase
-    </div>
+    <div style="font-size:11px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px">Configuracion Supabase</div>
     <div style="margin-bottom:12px">
-      <div style="font-size:11px;color:var(--text3);margin-bottom:5px;letter-spacing:.5px">URL DEL PROYECTO</div>
-      <input id="sb-url" type="url" placeholder="https://xxxxxxxxxxxx.supabase.co"
-        style="width:100%;background:var(--bg4);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'Jost',sans-serif;font-size:13px">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:5px">URL DEL PROYECTO</div>
+      <input id="sb-url" type="url" placeholder="https://xxxx.supabase.co" class="sb-input">
     </div>
     <div style="margin-bottom:16px">
-      <div style="font-size:11px;color:var(--text3);margin-bottom:5px;letter-spacing:.5px">API KEY (anon public)</div>
-      <input id="sb-key" type="password" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6..."
-        style="width:100%;background:var(--bg4);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'Jost',sans-serif;font-size:13px">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:5px">API KEY (anon public)</div>
+      <input id="sb-key" type="password" placeholder="eyJhbGciOiJIUzI1NiIsIn..." class="sb-input">
     </div>
     <button id="save-config-btn" class="btn btn-primary" onclick="saveConfig()">
       <i class="ti ti-plug" style="vertical-align:-2px;margin-right:6px"></i>GUARDAR Y CONECTAR
     </button>
-    <button class="btn btn-secondary" onclick="clearConfig()" style="margin-top:8px">
-      <i class="ti ti-plug-off" style="vertical-align:-2px;margin-right:6px"></i>DESCONECTAR
-    </button>
+    <button class="btn btn-secondary" onclick="clearConfig()">DESCONECTAR</button>
   </div>
-
-  <!-- INSTRUCTIONS -->
-  <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:16px">
-    <div style="font-size:11px;color:var(--text2);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px">Cómo configurar Supabase</div>
+  <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px">
+    <div style="font-size:11px;color:var(--text2);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px">Como configurar Supabase</div>
     <div style="font-size:12px;color:var(--text3);line-height:1.8">
-      <div style="margin-bottom:8px;display:flex;gap:8px"><span style="color:var(--gold);font-weight:600;min-width:18px">1.</span> Ve a <span style="color:var(--gold-light)">supabase.com</span> y crea una cuenta gratuita</div>
-      <div style="margin-bottom:8px;display:flex;gap:8px"><span style="color:var(--gold);font-weight:600;min-width:18px">2.</span> Crea un nuevo proyecto y anota la URL y API Key</div>
-      <div style="margin-bottom:8px;display:flex;gap:8px"><span style="color:var(--gold);font-weight:600;min-width:18px">3.</span> En el SQL Editor ejecuta el script que está en <span style="color:var(--gold-light)">supabase_setup.sql</span></div>
-      <div style="display:flex;gap:8px"><span style="color:var(--gold);font-weight:600;min-width:18px">4.</span> Pega la URL y la API Key aquí y presiona Conectar</div>
+      <div style="margin-bottom:8px;display:flex;gap:8px"><span style="color:var(--gold);font-weight:600;min-width:18px">1.</span>Ve a supabase.com y crea cuenta gratis</div>
+      <div style="margin-bottom:8px;display:flex;gap:8px"><span style="color:var(--gold);font-weight:600;min-width:18px">2.</span>Crea un proyecto nuevo</div>
+      <div style="margin-bottom:8px;display:flex;gap:8px"><span style="color:var(--gold);font-weight:600;min-width:18px">3.</span>En SQL Editor ejecuta el archivo supabase_setup.sql</div>
+      <div style="display:flex;gap:8px"><span style="color:var(--gold);font-weight:600;min-width:18px">4.</span>Pega la URL y API Key aqui y presiona Conectar</div>
     </div>
   </div>
-
-  <!-- SYNC BUTTON -->
-  <button class="btn btn-secondary" onclick="syncFromSupabase().then(()=>showToast('✓ Datos sincronizados'))" style="margin-top:16px">
+  <button class="btn btn-secondary" onclick="syncFromSupabase().then(function(){showToast('Datos sincronizados')})">
     <i class="ti ti-refresh" style="vertical-align:-2px;margin-right:6px"></i>SINCRONIZAR AHORA
   </button>
 </div>
 
-<!-- MODAL: SELECTOR DE PRODUCTOS -->
+<!-- MODAL PRODUCTOS -->
 <div class="modal-overlay" id="modal-overlay" onclick="closeProductModal(event)">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-handle"></div>
@@ -420,13 +332,11 @@ img{display:block}
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
-// ─── CATALOG ───────────────────────────────────────────────────────
-const CATALOG = [
+var CATALOG = [
   {id:'tirz10',name:'Tirzepatida',  dose:'10 mg', price:130},
   {id:'tirz20',name:'Tirzepatida',  dose:'20 mg', price:240},
   {id:'reta10',name:'Retatrutida',  dose:'10 mg', price:150},
@@ -438,30 +348,15 @@ const CATALOG = [
   {id:'nad',   name:'NAD+',         dose:'500 mg',price:80},
   {id:'ghk',   name:'GHK-CU',       dose:'50 mg', price:40},
   {id:'tesa',  name:'Tesamorelin',  dose:'20 mg', price:250},
-  {id:'klow',  name:'KLOW Blend',   dose:'80 mg', price:220},
+  {id:'klow',  name:'KLOW Blend',   dose:'80 mg', price:220}
 ];
 
-const OPERATORS = ['Wendy','David','Ricardo','Carlos'];
+var OPERATORS = ['Wendy','David','Ricardo','Carlos'];
 
-// ─── SUPABASE CLIENT ───────────────────────────────────────────────
-// Las credenciales se guardan en localStorage al configurar por primera vez
-let supabase = null;
+// sbClient — nombre diferente al SDK de Supabase (que usa 'supabase' como global)
+var sbClient = null;
 
-function getSBConfig(){
-  try{
-    const c = localStorage.getItem('peptilab_sb_config');
-    return c ? JSON.parse(c) : null;
-  }catch(e){ return null; }
-}
-function initSupabase(url, key){
-  try{
-    supabase = window.supabase.createClient(url, key);
-    return true;
-  }catch(e){ supabase = null; return false; }
-}
-
-// ─── STATE ─────────────────────────────────────────────────────────
-let state = {
+var state = {
   inventory: {},
   history: [],
   currentOp: null,
@@ -471,503 +366,385 @@ let state = {
   online: navigator.onLine
 };
 
-window.addEventListener('online',  ()=>{ state.online=true;  syncFromSupabase(); showToast('🟢 Conectado — sincronizando...'); });
-window.addEventListener('offline', ()=>{ state.online=false; showToast('🔴 Sin conexión — modo offline'); });
+var currentInvFilter = 'all';
+var currentHistFilter = 'all';
 
-// ─── LOCAL FALLBACK ────────────────────────────────────────────────
+window.addEventListener('online',  function(){ state.online=true;  syncFromSupabase(); showToast('Conectado — sincronizando...'); updateSBStatus(); });
+window.addEventListener('offline', function(){ state.online=false; showToast('Sin conexion — modo offline'); updateSBStatus(); });
+
+// ── LOCAL STORAGE ──────────────────────────────────────────────────
 function saveLocal(){
-  try{
-    localStorage.setItem('peptilab_v2', JSON.stringify({
-      inventory: state.inventory,
-      history:   state.history
-    }));
-  }catch(e){}
+  try{ localStorage.setItem('peptilab_v2', JSON.stringify({inventory:state.inventory,history:state.history})); }catch(e){}
 }
 function loadLocal(){
   try{
-    const raw = localStorage.getItem('peptilab_v2');
-    if(raw){
-      const s = JSON.parse(raw);
-      state.inventory = s.inventory || {};
-      state.history   = s.history   || [];
-    }
+    var raw = localStorage.getItem('peptilab_v2');
+    if(raw){ var s=JSON.parse(raw); state.inventory=s.inventory||{}; state.history=s.history||[]; }
   }catch(e){}
-  CATALOG.forEach(p=>{ if(state.inventory[p.id]===undefined) state.inventory[p.id]=0; });
+  CATALOG.forEach(function(p){ if(state.inventory[p.id]===undefined) state.inventory[p.id]=0; });
 }
 
-// ─── SUPABASE SYNC ─────────────────────────────────────────────────
-async function syncFromSupabase(){
-  if(!supabase || !state.online) return;
+// ── SUPABASE ───────────────────────────────────────────────────────
+function getSBConfig(){
+  try{ var c=localStorage.getItem('peptilab_sb_config'); return c?JSON.parse(c):null; }catch(e){ return null; }
+}
+function initSBClient(url, key){
   try{
-    // Load inventory
-    const { data: inv, error: e1 } = await supabase
-      .from('inventory')
-      .select('product_id, stock');
-    if(!e1 && inv){
-      inv.forEach(row=>{ state.inventory[row.product_id] = row.stock; });
-      CATALOG.forEach(p=>{ if(state.inventory[p.id]===undefined) state.inventory[p.id]=0; });
-    }
-    // Load history (last 200)
-    const { data: hist, error: e2 } = await supabase
-      .from('operations')
-      .select('*')
-      .order('created_at', {ascending:false})
-      .limit(200);
-    if(!e2 && hist){
-      state.history = hist.map(row=>({
-        id:       row.id,
-        type:     row.type,
-        operator: row.operator,
-        date:     new Date(row.created_at).toLocaleString('es-MX',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}),
-        items:    row.items,
-        total:    row.total
-      }));
-    }
-    saveLocal();
-    updateHeaderStat();
-    renderInventory(currentInvFilter||'all');
-    renderHistory(currentHistFilter||'all');
-  }catch(err){
-    console.warn('Supabase sync error:', err);
-  }
+    sbClient = window.supabase.createClient(url, key);
+    return true;
+  }catch(e){ sbClient=null; return false; }
 }
 
-async function saveToSupabase(){
-  if(!supabase || !state.online){ saveLocal(); return; }
-  try{
-    // Upsert all inventory rows
-    const invRows = CATALOG.map(p=>({ product_id: p.id, stock: state.inventory[p.id]||0 }));
-    await supabase.from('inventory').upsert(invRows, {onConflict:'product_id'});
-
-    // Insert latest operation (first in history)
-    if(state.history.length > 0){
-      const latest = state.history[0];
-      await supabase.from('operations').upsert({
-        id:         latest.id,
-        type:       latest.type,
-        operator:   latest.operator,
-        items:      latest.items,
-        total:      latest.total,
-        created_at: new Date(latest.id).toISOString()
-      }, {onConflict:'id'});
-    }
-    saveLocal();
-  }catch(err){
-    console.warn('Supabase save error:', err);
-    saveLocal();
-    showToast('⚠️ Guardado localmente (sin conexión a BD)');
-  }
+function syncFromSupabase(){
+  if(!sbClient || !state.online) return Promise.resolve();
+  return sbClient.from('inventory').select('product_id, stock')
+    .then(function(res){
+      if(!res.error && res.data){
+        res.data.forEach(function(row){ state.inventory[row.product_id]=row.stock; });
+        CATALOG.forEach(function(p){ if(state.inventory[p.id]===undefined) state.inventory[p.id]=0; });
+      }
+      return sbClient.from('operations').select('*').order('created_at',{ascending:false}).limit(200);
+    })
+    .then(function(res){
+      if(!res.error && res.data){
+        state.history = res.data.map(function(row){
+          return {
+            id: row.id, type: row.type, operator: row.operator,
+            date: new Date(row.created_at).toLocaleString('es-MX',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}),
+            items: row.items, total: row.total
+          };
+        });
+      }
+      saveLocal();
+      updateHeaderStat();
+      renderInventory(currentInvFilter);
+      renderHistory(currentHistFilter);
+    })
+    .catch(function(err){ console.warn('Sync error:', err); });
 }
 
-// ─── CONFIG SCREEN ─────────────────────────────────────────────────
-function showConfigScreen(){
-  document.getElementById('config-overlay').style.display='flex';
+function saveToSupabase(){
+  if(!sbClient || !state.online){ saveLocal(); return Promise.resolve(); }
+  var invRows = CATALOG.map(function(p){ return {product_id:p.id, stock:state.inventory[p.id]||0}; });
+  return sbClient.from('inventory').upsert(invRows, {onConflict:'product_id'})
+    .then(function(){
+      if(state.history.length > 0){
+        var latest = state.history[0];
+        return sbClient.from('operations').upsert({
+          id: latest.id, type: latest.type, operator: latest.operator,
+          items: latest.items, total: latest.total,
+          created_at: new Date(latest.id).toISOString()
+        }, {onConflict:'id'});
+      }
+    })
+    .then(function(){ saveLocal(); })
+    .catch(function(err){ console.warn('Save error:',err); saveLocal(); showToast('Guardado localmente (sin BD)'); });
 }
-function hideConfigScreen(){
-  document.getElementById('config-overlay').style.display='none';
-}
-async function saveConfig(){
-  const url = document.getElementById('sb-url').value.trim();
-  const key = document.getElementById('sb-key').value.trim();
+
+// ── CONFIG ─────────────────────────────────────────────────────────
+function saveConfig(){
+  var url = document.getElementById('sb-url').value.trim();
+  var key = document.getElementById('sb-key').value.trim();
   if(!url || !key){ showToast('Completa ambos campos'); return; }
-  const ok = initSupabase(url, key);
-  if(!ok){ showToast('Error al conectar — verifica las credenciales'); return; }
-  // Test connection
-  const btn = document.getElementById('save-config-btn');
+  var ok = initSBClient(url, key);
+  if(!ok){ showToast('Error al crear cliente Supabase'); return; }
+  var btn = document.getElementById('save-config-btn');
   btn.textContent = 'Conectando...';
   btn.disabled = true;
-  try{
-    const { error } = await supabase.from('inventory').select('product_id').limit(1);
-    if(error && error.code !== 'PGRST116'){
-      throw new Error(error.message);
-    }
-    localStorage.setItem('peptilab_sb_config', JSON.stringify({url, key}));
-    hideConfigScreen();
-    showToast('✓ Conectado a Supabase');
-    await syncFromSupabase();
-  }catch(e){
-    showToast('Error: ' + (e.message||'Verifica URL y API key'));
-    supabase = null;
-  }finally{
-    btn.textContent = 'GUARDAR Y CONECTAR';
-    btn.disabled = false;
-  }
+  sbClient.from('inventory').select('product_id').limit(1)
+    .then(function(res){
+      if(res.error && res.error.code !== 'PGRST116') throw new Error(res.error.message);
+      localStorage.setItem('peptilab_sb_config', JSON.stringify({url:url,key:key}));
+      showToast('Conectado a Supabase');
+      updateSBStatus();
+      return syncFromSupabase();
+    })
+    .catch(function(e){ showToast('Error: ' + (e.message||'Verifica credenciales')); sbClient=null; updateSBStatus(); })
+    .finally(function(){ btn.textContent='GUARDAR Y CONECTAR'; btn.disabled=false; });
 }
 function clearConfig(){
-  if(!confirm('¿Desconectar Supabase y borrar configuración?')) return;
   localStorage.removeItem('peptilab_sb_config');
-  supabase = null;
-  showToast('Configuración eliminada');
+  sbClient = null;
+  showToast('Configuracion eliminada');
   updateSBStatus();
 }
 function updateSBStatus(){
-  const dot  = document.getElementById('sb-status-dot');
-  const text = document.getElementById('sb-status-text');
-  if(supabase && state.online){
-    dot.style.background  = '#4CAF50';
-    text.textContent = 'Conectado a Supabase';
-  } else if(supabase && !state.online){
-    dot.style.background  = '#FF9800';
-    text.textContent = 'Supabase configurado — sin internet';
-  } else {
-    dot.style.background  = '#F44336';
-    text.textContent = 'Sin conexión a base de datos';
-  }
+  var dot  = document.getElementById('sb-status-dot');
+  var text = document.getElementById('sb-status-text');
+  if(!dot) return;
+  if(sbClient && state.online){ dot.style.background='#4CAF50'; text.textContent='Conectado a Supabase — tiempo real activo'; }
+  else if(sbClient && !state.online){ dot.style.background='#FF9800'; text.textContent='Supabase configurado — sin internet'; }
+  else { dot.style.background='#F44336'; text.textContent='Sin conexion a base de datos — modo local'; }
 }
 
-// ─── NAVIGATION ────────────────────────────────────────────────────
+// ── NAVIGATION ─────────────────────────────────────────────────────
 function goPage(name){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.nav-tab').forEach(function(t){ t.classList.remove('active'); });
   document.getElementById('page-'+name).classList.add('active');
   document.getElementById('tab-'+name).classList.add('active');
-  if(name==='inventario') renderInventory(currentInvFilter||'all');
-  if(name==='historial')  renderHistory(currentHistFilter||'all');
+  if(name==='inventario') renderInventory(currentInvFilter);
+  if(name==='historial')  renderHistory(currentHistFilter);
   if(name==='ajustes')    updateSBStatus();
 }
 
-// ─── OPERATOR ──────────────────────────────────────────────────────
+// ── OPERATOR ───────────────────────────────────────────────────────
 function selectOperator(name){
   state.currentOperator = name;
-  OPERATORS.forEach(o=>{
-    const el = document.getElementById('oper-'+o);
+  OPERATORS.forEach(function(o){
+    var el = document.getElementById('oper-'+o);
     if(el) el.classList.toggle('active', o===name);
   });
   updateTotals();
 }
 
-// ─── OP TYPE ───────────────────────────────────────────────────────
+// ── OP TYPE ────────────────────────────────────────────────────────
 function selectOpType(op){
   state.currentOp = op;
   state.cart = [];
-  document.querySelectorAll('.op-card').forEach(c=>c.classList.remove('selected'));
+  document.querySelectorAll('.op-card').forEach(function(c){ c.classList.remove('selected'); });
   document.getElementById('op-'+op).classList.add('selected');
   document.getElementById('op-form').style.display='block';
   renderCart();
 }
 
-// ─── MODAL ─────────────────────────────────────────────────────────
+// ── MODAL ──────────────────────────────────────────────────────────
 function openProductModal(){
-  if(!state.currentOp){ showToast('Primero elige el tipo de operación'); return; }
+  if(!state.currentOp){ showToast('Primero elige el tipo de operacion'); return; }
   state.modalSelected = [];
   document.getElementById('search-prod').value='';
   renderModalProducts('');
   document.getElementById('modal-overlay').classList.add('open');
 }
-function closeProductModal(e){
-  document.getElementById('modal-overlay').classList.remove('open');
-}
-function filterProducts(){
-  renderModalProducts(document.getElementById('search-prod').value.toLowerCase().trim());
-}
+function closeProductModal(e){ document.getElementById('modal-overlay').classList.remove('open'); }
+function filterProducts(){ renderModalProducts(document.getElementById('search-prod').value.toLowerCase().trim()); }
 function renderModalProducts(q){
-  const list = document.getElementById('modal-prod-list');
-  const filtered = CATALOG.filter(p=>
-    p.name.toLowerCase().includes(q) || p.dose.toLowerCase().includes(q)
-  );
-  if(filtered.length===0){
-    list.innerHTML=`<div class="empty-state" style="padding:20px"><i class="ti ti-search-off"></i><p>Sin resultados</p></div>`;
-    return;
-  }
-  list.innerHTML = filtered.map(p=>{
-    const sel   = state.modalSelected.includes(p.id);
-    const stock = state.inventory[p.id]||0;
-    const inCart= !!state.cart.find(c=>c.id===p.id);
-    return `<div class="prod-item ${sel?'selected':''}" onclick="toggleModalSel('${p.id}')">
-      <div class="prod-badge">${p.dose}</div>
-      <div class="prod-info">
-        <div class="prod-name">${p.name}</div>
-        <div class="prod-dose">Stock: ${stock}${inCart?' · <span style="color:var(--gold)">en pedido</span>':''}</div>
-      </div>
-      <div style="text-align:right;flex-shrink:0">
-        <div class="prod-price">$${p.price}</div>
-        ${sel?'<i class="ti ti-check" style="color:var(--gold);font-size:13px"></i>':''}
-      </div>
-    </div>`;
+  var list = document.getElementById('modal-prod-list');
+  var filtered = CATALOG.filter(function(p){ return p.name.toLowerCase().indexOf(q)>=0 || p.dose.toLowerCase().indexOf(q)>=0; });
+  if(!filtered.length){ list.innerHTML='<div class="empty-state" style="padding:20px"><i class="ti ti-search-off"></i><p>Sin resultados</p></div>'; return; }
+  list.innerHTML = filtered.map(function(p){
+    var sel = state.modalSelected.indexOf(p.id)>=0;
+    var stock = state.inventory[p.id]||0;
+    var inCart = !!state.cart.find(function(c){ return c.id===p.id; });
+    return '<div class="prod-item '+(sel?'selected':'')+'" onclick="toggleModalSel(\''+p.id+'\')">'
+      +'<div class="prod-badge">'+p.dose+'</div>'
+      +'<div class="prod-info"><div class="prod-name">'+p.name+'</div>'
+      +'<div class="prod-dose">Stock: '+stock+(inCart?' · en pedido':'')+'</div></div>'
+      +'<div style="text-align:right;flex-shrink:0"><div class="prod-price">$'+p.price+'</div>'
+      +(sel?'<i class="ti ti-check" style="color:var(--gold);font-size:13px"></i>':'')+'</div></div>';
   }).join('');
 }
 function toggleModalSel(id){
-  const i = state.modalSelected.indexOf(id);
+  var i = state.modalSelected.indexOf(id);
   if(i>=0) state.modalSelected.splice(i,1); else state.modalSelected.push(id);
   renderModalProducts(document.getElementById('search-prod').value.toLowerCase().trim());
 }
 function addSelectedToCart(){
-  if(state.modalSelected.length===0){ showToast('Selecciona al menos un producto'); return; }
-  state.modalSelected.forEach(id=>{
-    if(!state.cart.find(c=>c.id===id)){
-      const p = CATALOG.find(x=>x.id===id);
+  if(!state.modalSelected.length){ showToast('Selecciona al menos un producto'); return; }
+  state.modalSelected.forEach(function(id){
+    if(!state.cart.find(function(c){ return c.id===id; })){
+      var p = CATALOG.find(function(x){ return x.id===id; });
       state.cart.push({id:p.id,name:p.name,dose:p.dose,basePrice:p.price,price:p.price,qty:1,comment:'',modified:false});
     }
   });
   closeProductModal();
   renderCart();
-  showToast(`${state.modalSelected.length} producto(s) agregado(s)`);
+  showToast(state.modalSelected.length+' producto(s) agregado(s)');
   state.modalSelected = [];
 }
 
-// ─── CART ──────────────────────────────────────────────────────────
+// ── CART ───────────────────────────────────────────────────────────
 function renderCart(){
-  const container  = document.getElementById('cart-container');
-  const emptyEl    = document.getElementById('cart-empty');
-  const totalWrap  = document.getElementById('total-box-wrap');
-  const showPrice  = state.currentOp==='venta'||state.currentOp==='compra';
-
-  if(state.cart.length===0){
-    container.innerHTML='';
-    emptyEl.style.display='block';
-    totalWrap.style.display='none';
-    return;
-  }
+  var container = document.getElementById('cart-container');
+  var emptyEl   = document.getElementById('cart-empty');
+  var totalWrap = document.getElementById('total-box-wrap');
+  var showPrice = state.currentOp==='venta'||state.currentOp==='compra';
+  if(!state.cart.length){ container.innerHTML=''; emptyEl.style.display='block'; totalWrap.style.display='none'; return; }
   emptyEl.style.display='none';
-  container.innerHTML = state.cart.map((item,i)=>{
-    const modified = item.price !== item.basePrice;
-    return `<div class="cart-item">
-      <div class="cart-item-header">
-        <div>
-          <div class="cart-item-name">${item.name} <span style="color:var(--text3);font-size:11px">${item.dose}</span></div>
-        </div>
-        <span class="cart-item-remove" onclick="removeFromCart(${i})"><i class="ti ti-x"></i></span>
-      </div>
-      <div class="qty-row">
-        <span style="font-size:11px;color:var(--text3);min-width:70px">CANTIDAD</span>
-        <button class="qty-btn" onclick="changeQty(${i},-1)">−</button>
-        <span class="qty-val">${item.qty}</span>
-        <button class="qty-btn" onclick="changeQty(${i},1)">+</button>
-      </div>
-      ${showPrice?`
-      <div class="price-row">
-        <span class="price-label">Precio base</span>
-        <span style="font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--text3)">$${item.basePrice.toFixed(2)}</span>
-      </div>
-      <div class="price-row">
-        <span class="price-label">Precio real</span>
-        <input type="number" step="0.01" min="0" class="price-input ${modified?'modified':''}"
-          value="${item.price}" oninput="updatePrice(${i},this.value)">
-        ${modified?'<span style="font-size:10px;color:var(--warning)"><i class="ti ti-edit" style="vertical-align:-2px"></i> Modificado</span>':''}
-      </div>
-      ${modified?`
-      <div class="comment-row">
-        <div class="comment-required"><i class="ti ti-alert-circle" style="font-size:12px"></i> Motivo del precio diferente (obligatorio)</div>
-        <textarea class="comment-input" rows="2" placeholder="Ej: Descuento por cliente frecuente, promoción especial..."
-          oninput="updateComment(${i},this.value)">${item.comment}</textarea>
-      </div>`:''}
-      `:''}
-    </div>`;
+  container.innerHTML = state.cart.map(function(item,i){
+    var mod = Math.abs(item.price - item.basePrice) > 0.001;
+    return '<div class="cart-item">'
+      +'<div class="cart-item-header">'
+      +'<div class="cart-item-name">'+item.name+' <span style="color:var(--text3);font-size:11px">'+item.dose+'</span></div>'
+      +'<span class="cart-item-remove" onclick="removeFromCart('+i+')"><i class="ti ti-x"></i></span></div>'
+      +'<div class="qty-row"><span style="font-size:11px;color:var(--text3);min-width:70px">CANTIDAD</span>'
+      +'<button class="qty-btn" onclick="changeQty('+i+',-1)">-</button>'
+      +'<span class="qty-val">'+item.qty+'</span>'
+      +'<button class="qty-btn" onclick="changeQty('+i+',1)">+</button></div>'
+      +(showPrice
+        ?'<div class="price-row"><span class="price-label">Precio base</span>'
+        +'<span style="font-family:\'Cormorant Garamond\',serif;font-size:15px;color:var(--text3)">$'+item.basePrice.toFixed(2)+'</span></div>'
+        +'<div class="price-row"><span class="price-label">Precio real</span>'
+        +'<input type="number" step="0.01" min="0" class="price-input'+(mod?' modified':'')+'" value="'+item.price+'" oninput="updatePrice('+i+',this.value)">'
+        +(mod?'<span style="font-size:10px;color:var(--warning)"><i class="ti ti-edit" style="vertical-align:-2px"></i> Modificado</span>':'')+'</div>'
+        +(mod?'<div class="comment-row"><div class="comment-required"><i class="ti ti-alert-circle" style="font-size:12px"></i> Motivo del precio diferente (obligatorio)</div>'
+        +'<textarea class="comment-input" rows="2" placeholder="Ej: Descuento por cliente frecuente..." oninput="updateComment('+i+',this.value)">'+item.comment+'</textarea></div>':'')
+        :'')
+      +'</div>';
   }).join('');
   totalWrap.style.display='block';
   updateTotals();
 }
-function removeFromCart(i){
-  state.cart.splice(i,1);
-  renderCart();
-}
-function changeQty(i,d){
-  state.cart[i].qty = Math.max(1, state.cart[i].qty+d);
-  renderCart();
-}
+function removeFromCart(i){ state.cart.splice(i,1); renderCart(); }
+function changeQty(i,d){ state.cart[i].qty=Math.max(1,state.cart[i].qty+d); renderCart(); }
 function updatePrice(i,v){
-  const p = parseFloat(v)||0;
-  state.cart[i].price    = p;
-  state.cart[i].modified = Math.abs(p - state.cart[i].basePrice) > 0.001;
+  var p=parseFloat(v)||0;
+  state.cart[i].price=p;
+  state.cart[i].modified=Math.abs(p-state.cart[i].basePrice)>0.001;
   if(!state.cart[i].modified) state.cart[i].comment='';
   renderCart();
 }
 function updateComment(i,v){ state.cart[i].comment=v; }
 function updateTotals(){
-  const total = state.cart.reduce((s,c)=>s+c.price*c.qty,0);
-  const units = state.cart.reduce((s,c)=>s+c.qty,0);
-  const totOp = document.getElementById('total-operator');
-  if(totOp) totOp.textContent = state.currentOperator||'—';
-  document.getElementById('sub-items').textContent  = state.cart.length;
-  document.getElementById('sub-units').textContent  = units;
-  document.getElementById('grand-total').textContent= '$'+total.toFixed(2);
+  var total=state.cart.reduce(function(s,c){ return s+c.price*c.qty; },0);
+  var units=state.cart.reduce(function(s,c){ return s+c.qty; },0);
+  var totOp=document.getElementById('total-operator');
+  if(totOp) totOp.textContent=state.currentOperator||'—';
+  document.getElementById('sub-items').textContent=state.cart.length;
+  document.getElementById('sub-units').textContent=units;
+  document.getElementById('grand-total').textContent='$'+total.toFixed(2);
 }
 function clearCart(){
-  state.cart=[];
-  state.currentOp=null;
-  document.querySelectorAll('.op-card').forEach(c=>c.classList.remove('selected'));
+  state.cart=[]; state.currentOp=null;
+  document.querySelectorAll('.op-card').forEach(function(c){ c.classList.remove('selected'); });
   document.getElementById('op-form').style.display='none';
   document.getElementById('cart-container').innerHTML='';
   document.getElementById('cart-empty').style.display='block';
   document.getElementById('total-box-wrap').style.display='none';
 }
 
-// ─── CONFIRM ───────────────────────────────────────────────────────
-async function confirmOp(){
-  if(!state.currentOperator){ showToast('Selecciona quién registra la operación'); return; }
-  if(state.cart.length===0)  { showToast('Agrega al menos un producto'); return; }
-  const missing = state.cart.filter(c=>c.modified && !c.comment.trim());
-  if(missing.length>0){ showToast('Completa el motivo del precio modificado'); return; }
-
-  const btn = document.getElementById('confirm-btn');
-  btn.disabled = true;
-  btn.textContent = 'Guardando...';
-
-  const adds    = ['compra','devolucion'];
-  const removes = ['venta','perdida'];
-  state.cart.forEach(item=>{
-    if(adds.includes(state.currentOp))
-      state.inventory[item.id] = (state.inventory[item.id]||0)+item.qty;
-    if(removes.includes(state.currentOp))
-      state.inventory[item.id] = Math.max(0,(state.inventory[item.id]||0)-item.qty);
+// ── CONFIRM ────────────────────────────────────────────────────────
+function confirmOp(){
+  if(!state.currentOperator){ showToast('Selecciona quien registra la operacion'); return; }
+  if(!state.cart.length){ showToast('Agrega al menos un producto'); return; }
+  var missing = state.cart.filter(function(c){ return c.modified && !c.comment.trim(); });
+  if(missing.length){ showToast('Completa el motivo del precio modificado'); return; }
+  var btn = document.getElementById('confirm-btn');
+  btn.disabled=true; btn.textContent='Guardando...';
+  var adds=['compra','devolucion'], removes=['venta','perdida'];
+  state.cart.forEach(function(item){
+    if(adds.indexOf(state.currentOp)>=0)    state.inventory[item.id]=(state.inventory[item.id]||0)+item.qty;
+    if(removes.indexOf(state.currentOp)>=0) state.inventory[item.id]=Math.max(0,(state.inventory[item.id]||0)-item.qty);
   });
-  const total = state.cart.reduce((s,c)=>s+c.price*c.qty,0);
+  var total=state.cart.reduce(function(s,c){ return s+c.price*c.qty; },0);
   state.history.unshift({
-    id:       Date.now(),
-    type:     state.currentOp,
-    operator: state.currentOperator,
-    date:     new Date().toLocaleString('es-MX',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}),
-    items:    state.cart.map(c=>({...c})),
-    total
+    id: Date.now(), type: state.currentOp, operator: state.currentOperator,
+    date: new Date().toLocaleString('es-MX',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}),
+    items: state.cart.map(function(c){ return Object.assign({},c); }),
+    total: total
   });
-  await saveToSupabase();
-  btn.disabled = false;
-  btn.innerHTML = '<i class="ti ti-check" style="vertical-align:-2px;margin-right:6px"></i>CONFIRMAR OPERACIÓN';
-  clearCart();
-  updateHeaderStat();
-  showToast('✓ Operación registrada exitosamente');
-  setTimeout(()=>goPage('inventario'),900);
+  saveToSupabase().then(function(){
+    btn.disabled=false;
+    btn.innerHTML='<i class="ti ti-check" style="vertical-align:-2px;margin-right:6px"></i>CONFIRMAR OPERACION';
+    clearCart(); updateHeaderStat();
+    showToast('Operacion registrada exitosamente');
+    setTimeout(function(){ goPage('inventario'); }, 900);
+  });
 }
 
-// ─── INVENTORY ─────────────────────────────────────────────────────
-let currentInvFilter = 'all';
+// ── INVENTORY ──────────────────────────────────────────────────────
 function filterInv(f,btn){
-  currentInvFilter = f;
-  document.querySelectorAll('.inv-filter-btn').forEach(b=>b.classList.remove('active'));
+  currentInvFilter=f;
+  document.querySelectorAll('.inv-filter-btn').forEach(function(b){ b.classList.remove('active'); });
   if(btn) btn.classList.add('active');
   renderInventory(f);
 }
 function renderInventory(filter){
-  const el = document.getElementById('inv-list');
-  const maxStock = 20;
-  let items = CATALOG.map(p=>({...p, stock: state.inventory[p.id]||0}));
-  if(filter==='ok')  items = items.filter(p=>p.stock>=3);
-  if(filter==='low') items = items.filter(p=>p.stock>0&&p.stock<3);
-  if(filter==='out') items = items.filter(p=>p.stock===0);
-  if(items.length===0){
-    el.innerHTML=`<div class="empty-state"><i class="ti ti-package-off"></i><p>No hay productos en esta categoría</p></div>`;
-    return;
-  }
-  el.innerHTML = items.map(p=>{
-    const pct = Math.min(100,(p.stock/maxStock)*100);
-    const cls   = p.stock===0?'stock-out':p.stock<3?'stock-low':'stock-ok';
-    const lbl   = p.stock===0?'SIN STOCK':p.stock<3?'BAJO':'OK';
-    const color = p.stock===0?'#C0392B':p.stock<3?'#FF9800':'#1A7A4A';
-    return `<div class="inv-item">
-      <div class="inv-item-header">
-        <div>
-          <div class="inv-item-name">${p.name}</div>
-          <div class="inv-item-dose">${p.dose}</div>
-        </div>
-        <span class="stock-badge ${cls}">${lbl}</span>
-      </div>
-      <div class="inv-bar-wrap"><div class="inv-bar" style="width:${pct}%;background:${color}"></div></div>
-      <div class="inv-bottom">
-        <span class="inv-stock" style="color:${color}">${p.stock} <span style="font-size:12px;color:var(--text3)">unidades</span></span>
-        <span class="inv-price">$${p.price} USD</span>
-      </div>
-    </div>`;
+  var el=document.getElementById('inv-list');
+  var maxStock=20;
+  var items=CATALOG.map(function(p){ return Object.assign({},p,{stock:state.inventory[p.id]||0}); });
+  if(filter==='ok')  items=items.filter(function(p){ return p.stock>=3; });
+  if(filter==='low') items=items.filter(function(p){ return p.stock>0&&p.stock<3; });
+  if(filter==='out') items=items.filter(function(p){ return p.stock===0; });
+  if(!items.length){ el.innerHTML='<div class="empty-state"><i class="ti ti-package-off"></i><p>No hay productos en esta categoria</p></div>'; return; }
+  el.innerHTML=items.map(function(p){
+    var pct=Math.min(100,(p.stock/maxStock)*100);
+    var cls=p.stock===0?'stock-out':p.stock<3?'stock-low':'stock-ok';
+    var lbl=p.stock===0?'SIN STOCK':p.stock<3?'BAJO':'OK';
+    var color=p.stock===0?'#C0392B':p.stock<3?'#FF9800':'#1A7A4A';
+    return '<div class="inv-item">'
+      +'<div class="inv-item-header"><div><div class="inv-item-name">'+p.name+'</div><div class="inv-item-dose">'+p.dose+'</div></div>'
+      +'<span class="stock-badge '+cls+'">'+lbl+'</span></div>'
+      +'<div class="inv-bar-wrap"><div class="inv-bar" style="width:'+pct+'%;background:'+color+'"></div></div>'
+      +'<div class="inv-bottom"><span class="inv-stock" style="color:'+color+'">'+p.stock+' <span style="font-size:12px;color:var(--text3)">unidades</span></span>'
+      +'<span class="inv-price">$'+p.price+' USD</span></div></div>';
   }).join('');
   updateHeaderStat();
 }
 function updateHeaderStat(){
-  const total = CATALOG.reduce((s,p)=>s+(state.inventory[p.id]||0)*p.price,0);
+  var total=CATALOG.reduce(function(s,p){ return s+(state.inventory[p.id]||0)*p.price; },0);
   document.getElementById('hdr-total-val').textContent='$'+total.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0});
 }
 
-// ─── HISTORY ───────────────────────────────────────────────────────
-let currentHistFilter='all';
+// ── HISTORY ────────────────────────────────────────────────────────
+var TYPE_LABEL={venta:'Venta',compra:'Compra',devolucion:'Devolucion',perdida:'Perdida'};
 function filterHist(f,btn){
   currentHistFilter=f;
-  document.querySelectorAll('.hist-filter-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.hist-filter-btn').forEach(function(b){ b.classList.remove('active'); });
   if(btn) btn.classList.add('active');
   renderHistory(f);
 }
-const TYPE_LABEL={venta:'Venta',compra:'Compra',devolucion:'Devolución',perdida:'Pérdida'};
 function renderHistory(filter){
-  const el = document.getElementById('hist-list');
-  const items = filter==='all'?state.history:state.history.filter(h=>h.type===filter);
-  if(items.length===0){
-    el.innerHTML=`<div class="empty-state"><i class="ti ti-history"></i><p>No hay operaciones registradas${filter!=='all'?' en esta categoría':''}</p></div>`;
-    return;
-  }
-  const showMoney = (t)=>t==='venta'||t==='compra';
-  el.innerHTML = items.map(h=>`
-    <div class="hist-item">
-      <div class="hist-header">
-        <span class="hist-type type-${h.type}">${TYPE_LABEL[h.type]||h.type}</span>
-        <div class="hist-meta">
-          ${h.operator?`<span class="hist-operator"><i class="ti ti-user" style="font-size:10px;vertical-align:-1px"></i> ${h.operator}</span>`:''}
-          <span class="hist-date">${h.date}</span>
-        </div>
-      </div>
-      <div class="hist-products">${h.items.map(i=>`${i.name} ${i.dose} ×${i.qty}${i.modified?` <span style="color:var(--warning)">($${parseFloat(i.price).toFixed(2)})↓</span>`:''}`).join(' · ')}</div>
-      ${h.items.some(i=>i.modified&&i.comment)?
-        `<div class="hist-comment">${h.items.filter(i=>i.modified&&i.comment).map(i=>`<b style="color:var(--warning)">${i.name}:</b> ${i.comment}`).join('<br>')}</div>`:''}
-      ${showMoney(h.type)?`<div style="display:flex;justify-content:flex-end;margin-top:6px"><span class="hist-total">$${parseFloat(h.total).toFixed(2)} USD</span></div>`:''}
-    </div>
-  `).join('');
+  var el=document.getElementById('hist-list');
+  var items=filter==='all'?state.history:state.history.filter(function(h){ return h.type===filter; });
+  if(!items.length){ el.innerHTML='<div class="empty-state"><i class="ti ti-history"></i><p>No hay operaciones registradas'+(filter!=='all'?' en esta categoria':'')+'</p></div>'; return; }
+  el.innerHTML=items.map(function(h){
+    var showMoney=h.type==='venta'||h.type==='compra';
+    var modItems=h.items.filter(function(i){ return i.modified&&i.comment; });
+    return '<div class="hist-item">'
+      +'<div class="hist-header"><span class="hist-type type-'+h.type+'">'+(TYPE_LABEL[h.type]||h.type)+'</span>'
+      +'<div class="hist-meta">'+(h.operator?'<span class="hist-operator">'+h.operator+'</span>':'')+'<span class="hist-date">'+h.date+'</span></div></div>'
+      +'<div class="hist-products">'+h.items.map(function(i){ return i.name+' '+i.dose+' x'+i.qty+(i.modified?' ($'+parseFloat(i.price).toFixed(2)+')':''); }).join(' · ')+'</div>'
+      +(modItems.length?'<div class="hist-comment">'+modItems.map(function(i){ return '<b style="color:var(--warning)">'+i.name+':</b> '+i.comment; }).join('<br>')+'</div>':'')
+      +(showMoney?'<div style="display:flex;justify-content:flex-end;margin-top:6px"><span class="hist-total">$'+parseFloat(h.total).toFixed(2)+' USD</span></div>':'')
+      +'</div>';
+  }).join('');
 }
 
-// ─── CATALOG ───────────────────────────────────────────────────────
+// ── CATALOG ────────────────────────────────────────────────────────
 function renderCatalog(){
-  const el = document.getElementById('cat-list');
-  const grouped={};
-  CATALOG.forEach(p=>{if(!grouped[p.name])grouped[p.name]=[];grouped[p.name].push(p);});
-  el.innerHTML=Object.entries(grouped).map(([name,items])=>`
-    <div class="cat-group">
-      <div class="cat-group-name">${name}</div>
-      ${items.map(p=>`<div class="cat-row"><span class="cat-dose">${p.dose}</span><span class="cat-price">$${p.price}.00 USD</span></div>`).join('')}
-    </div>
-  `).join('');
+  var el=document.getElementById('cat-list');
+  var grouped={};
+  CATALOG.forEach(function(p){ if(!grouped[p.name]) grouped[p.name]=[]; grouped[p.name].push(p); });
+  el.innerHTML=Object.keys(grouped).map(function(name){
+    return '<div class="cat-group"><div class="cat-group-name">'+name+'</div>'
+      +grouped[name].map(function(p){ return '<div class="cat-row"><span class="cat-dose">'+p.dose+'</span><span class="cat-price">$'+p.price+'.00 USD</span></div>'; }).join('')+'</div>';
+  }).join('');
 }
 
-// ─── TOAST ─────────────────────────────────────────────────────────
-let toastTimer;
+// ── TOAST ──────────────────────────────────────────────────────────
+var toastTimer;
 function showToast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg;
-  t.classList.add('show');
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>t.classList.remove('show'),2600);
+  toastTimer=setTimeout(function(){ t.classList.remove('show'); },2600);
 }
 
-// ─── INIT ──────────────────────────────────────────────────────────
-async function initApp(){
-  // Always load local first for instant UI
-  loadLocal();
-  updateHeaderStat();
-  renderInventory('all');
-  renderHistory('all');
-  renderCatalog();
-  // Try to connect Supabase
-  const cfg = getSBConfig();
-  if(cfg){
-    const ok = initSupabase(cfg.url, cfg.key);
-    if(ok){
-      // Pre-fill config fields
-      document.getElementById('sb-url').value = cfg.url;
-      document.getElementById('sb-key').value = cfg.key;
-      await syncFromSupabase();
-      // Realtime subscription: refresh inventory when another device saves
-      supabase
-        .channel('inventory_changes')
-        .on('postgres_changes', {event:'*', schema:'public', table:'inventory'}, ()=>{
-          syncFromSupabase();
-        })
-        .on('postgres_changes', {event:'INSERT', schema:'public', table:'operations'}, ()=>{
-          syncFromSupabase();
-        })
+// ── INIT ───────────────────────────────────────────────────────────
+loadLocal();
+updateHeaderStat();
+renderInventory('all');
+renderHistory('all');
+renderCatalog();
+
+var cfg = getSBConfig();
+if(cfg){
+  var ok = initSBClient(cfg.url, cfg.key);
+  if(ok){
+    document.getElementById('sb-url').value = cfg.url;
+    document.getElementById('sb-key').value = cfg.key;
+    syncFromSupabase().then(function(){
+      sbClient.channel('inv_rt')
+        .on('postgres_changes',{event:'*',schema:'public',table:'inventory'}, function(){ syncFromSupabase(); })
+        .on('postgres_changes',{event:'INSERT',schema:'public',table:'operations'}, function(){ syncFromSupabase(); })
         .subscribe();
-    }
+    });
   }
-  updateSBStatus();
 }
+updateSBStatus();
 
-initApp();
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('sw.js').catch(()=>{});
-}
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').catch(function(){}); }
 </script>
 </body>
 </html>
