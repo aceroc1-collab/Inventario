@@ -1,72 +1,43 @@
--- ─────────────────────────────────────────────────────────────────
--- PEPTILAB — Setup de base de datos en Supabase
--- Ejecuta este script completo en el SQL Editor de tu proyecto
--- ─────────────────────────────────────────────────────────────────
+-- PEPTILAB — Setup Supabase (ejecutar en SQL Editor)
 
--- 1. TABLA DE INVENTARIO
--- Guarda el stock actual de cada producto
 CREATE TABLE IF NOT EXISTS inventory (
   product_id  TEXT PRIMARY KEY,
   stock       INTEGER NOT NULL DEFAULT 0,
   updated_at  TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 2. TABLA DE OPERACIONES (historial)
--- Guarda cada venta, compra, devolución o pérdida registrada
 CREATE TABLE IF NOT EXISTS operations (
   id          BIGINT PRIMARY KEY,
-  type        TEXT NOT NULL CHECK (type IN ('venta','compra','devolucion','perdida')),
+  type        TEXT NOT NULL,
   operator    TEXT,
   items       JSONB NOT NULL,
   total       NUMERIC(10,2) DEFAULT 0,
   created_at  TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 3. ÍNDICES para consultas rápidas
-CREATE INDEX IF NOT EXISTS idx_operations_created_at ON operations(created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_operations_type       ON operations(type);
-CREATE INDEX IF NOT EXISTS idx_operations_operator   ON operations(operator);
+CREATE INDEX IF NOT EXISTS idx_ops_date ON operations(created_at DESC);
 
--- 4. HABILITAR REALTIME en ambas tablas
--- (para que todos los dispositivos se sincronicen automáticamente)
-ALTER TABLE inventory  REPLICA IDENTITY FULL;
-ALTER TABLE operations REPLICA IDENTITY FULL;
-
--- 5. ROW LEVEL SECURITY — acceso libre (sin login de usuarios)
--- Si en el futuro quieres autenticación, aquí se agregan las políticas
 ALTER TABLE inventory  ENABLE ROW LEVEL SECURITY;
 ALTER TABLE operations ENABLE ROW LEVEL SECURITY;
 
--- Permitir lectura y escritura con la API key pública (anon)
-CREATE POLICY "Allow public read inventory"
-  ON inventory FOR SELECT USING (true);
+DROP POLICY IF EXISTS "public_inventory"  ON inventory;
+DROP POLICY IF EXISTS "public_operations" ON operations;
+DROP POLICY IF EXISTS "Allow public read inventory"  ON inventory;
+DROP POLICY IF EXISTS "Allow public write inventory" ON inventory;
+DROP POLICY IF EXISTS "Allow public read operations"  ON operations;
+DROP POLICY IF EXISTS "Allow public write operations" ON operations;
 
-CREATE POLICY "Allow public write inventory"
-  ON inventory FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "public_inventory"  ON inventory  FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "public_operations" ON operations FOR ALL USING (true) WITH CHECK (true);
 
-CREATE POLICY "Allow public read operations"
-  ON operations FOR SELECT USING (true);
+ALTER TABLE inventory  REPLICA IDENTITY FULL;
+ALTER TABLE operations REPLICA IDENTITY FULL;
 
-CREATE POLICY "Allow public write operations"
-  ON operations FOR ALL USING (true) WITH CHECK (true);
-
--- 6. INICIALIZAR INVENTARIO con todos los productos en 0
--- (solo si la tabla está vacía)
+-- Inventario inicial con stock real
 INSERT INTO inventory (product_id, stock) VALUES
-  ('tirz10', 0),
-  ('tirz20', 0),
-  ('reta10', 0),
-  ('reta20', 0),
-  ('bpc5',   0),
-  ('bpc10',  0),
-  ('tb5',    0),
-  ('tb10',   0),
-  ('nad',    0),
-  ('ghk',    0),
-  ('tesa',   0),
-  ('klow',   0)
-ON CONFLICT (product_id) DO NOTHING;
-
--- ─────────────────────────────────────────────────────────────────
--- Listo! Ahora ve a la app → Ajustes y pega la URL y API Key
--- ─────────────────────────────────────────────────────────────────
+  ('klow',2),('tb10',18),('tirz20',30),('tirz10',30),
+  ('nad',8),('tesa10',6),('selank',10),('semax',10),
+  ('mots',9),('bpc10',54),('glow',10),('reta10',39),
+  ('ipamorelin',10),('ghk100',7),('ghk50',8),('cjc',20),
+  ('pt141',10),('reta20',20)
+ON CONFLICT (product_id) DO UPDATE SET stock = EXCLUDED.stock;
