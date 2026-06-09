@@ -86,6 +86,11 @@ html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;f
 .op-card i{font-size:28px;margin-bottom:8px;display:block}
 .op-card.venta i{color:#2ECC71}.op-card.compra i{color:#3498DB}
 .op-card.devolucion i{color:#F39C12}.op-card.perdida i{color:#E74C3C}
+.op-card.gasto i{color:#E67E22}.op-card.capital i{color:#9B59B6}
+.op-card.gasto.selected{border-color:#E67E22;box-shadow:0 0 20px rgba(230,126,34,0.1)}
+.op-card.capital.selected{border-color:#9B59B6;box-shadow:0 0 20px rgba(155,89,182,0.1)}
+.op-card.gasto::before{background:linear-gradient(135deg,rgba(230,126,34,0.08),transparent)}
+.op-card.capital::before{background:linear-gradient(135deg,rgba(155,89,182,0.08),transparent)}
 .op-card .op-name{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text)}
 .op-card .op-desc{font-size:10px;color:var(--text3);margin-top:3px}
 
@@ -111,6 +116,8 @@ html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;f
 .ci-qty{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .ci-qty-label{font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;min-width:64px}
 .qty-btn{width:30px;height:30px;border-radius:var(--radius-xs);background:var(--bg4);border:1px solid var(--border-mid);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;font-family:'Jost',sans-serif}
+.qty-input{width:52px;text-align:center;background:var(--bg4);border:1px solid var(--border-gold);border-radius:var(--radius-xs);padding:4px 6px;color:var(--gold-light);font-size:17px;font-weight:700;font-family:'Cormorant Garamond',serif;-webkit-appearance:none;appearance:none}
+.qty-input:focus{outline:none;border-color:var(--gold)}
 .qty-val{font-size:17px;font-weight:700;min-width:32px;text-align:center;color:var(--gold-light);font-family:'Cormorant Garamond',serif}
 .ci-price-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
 .ci-price-label{font-size:10px;color:var(--text3);min-width:72px}
@@ -170,6 +177,8 @@ html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;f
 .hb-compra{background:var(--blue-faint);color:#3498DB}
 .hb-devolucion{background:var(--amber-faint);color:#F39C12}
 .hb-perdida{background:var(--red-faint);color:#E74C3C}
+.hb-gasto{background:rgba(230,126,34,0.12);color:#E67E22}
+.hb-capital{background:rgba(155,89,182,0.12);color:#9B59B6}
 .hist-meta{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
 .hist-oper{font-size:10px;background:rgba(200,146,42,0.1);color:var(--gold);padding:2px 9px;border-radius:10px;font-weight:500;border:1px solid var(--border-gold)}
 .hist-pay{font-size:10px;padding:2px 9px;border-radius:10px;font-weight:500;border:1px solid var(--border-mid);color:var(--text3)}
@@ -329,6 +338,14 @@ html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;f
       <i class="ti ti-alert-triangle"></i>
       <div class="op-name">Perdida</div><div class="op-desc">Baja de stock</div>
     </div>
+    <div class="op-card gasto" onclick="selectOpType('gasto')" id="op-gasto">
+      <i class="ti ti-receipt"></i>
+      <div class="op-name">Gasto</div><div class="op-desc">Egreso de caja</div>
+    </div>
+    <div class="op-card capital" onclick="selectOpType('capital')" id="op-capital">
+      <i class="ti ti-plus-circle"></i>
+      <div class="op-name">Capital</div><div class="op-desc">Ingreso a caja</div>
+    </div>
   </div>
 
   <div id="op-form" style="display:none">
@@ -343,12 +360,24 @@ html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;f
       </div>
     </div>
 
-    <div class="add-prod-bar">
-      <span>Productos</span>
-      <button class="btn-add" onclick="openModal()"><i class="ti ti-plus" style="font-size:13px"></i>Agregar</button>
+    <!-- GASTO/CAPITAL FORM -->
+    <div id="simple-op-form" style="display:none">
+      <div style="background:var(--bg3);border:1px solid var(--border-mid);border-radius:var(--radius);padding:14px;margin-bottom:14px">
+        <div class="sb-label" id="simple-op-concept-label">Concepto / Descripcion</div>
+        <input type="text" id="simple-op-concept" class="sb-input" placeholder="Ej: Envio DHL, Material empaque...">
+        <div class="sb-label">Monto USD</div>
+        <input type="number" id="simple-op-amount" class="sb-input" placeholder="0.00" min="0" step="0.01" style="margin-bottom:0">
+      </div>
     </div>
-    <div id="cart-wrap"></div>
-    <div class="empty" id="cart-empty"><i class="ti ti-shopping-cart-off"></i><p>Ningun producto agregado</p></div>
+
+    <div id="products-op-form">
+      <div class="add-prod-bar">
+        <span>Productos</span>
+        <button class="btn-add" onclick="openModal()"><i class="ti ti-plus" style="font-size:13px"></i>Agregar</button>
+      </div>
+      <div id="cart-wrap"></div>
+      <div class="empty" id="cart-empty"><i class="ti ti-shopping-cart-off"></i><p>Ningun producto agregado</p></div>
+    </div>
 
     <div id="total-wrap" style="display:none">
       <div class="total-box">
@@ -806,10 +835,26 @@ function selectOpType(op){
   document.querySelectorAll('.op-card').forEach(function(c){ c.classList.remove('selected'); });
   document.getElementById('op-'+op).classList.add('selected');
   document.getElementById('op-form').style.display='block';
-  var needsPay = op==='venta'||op==='compra';
+
+  var needsPay = op==='venta'||op==='compra'||op==='gasto'||op==='capital';
+  var isSimple  = op==='gasto'||op==='capital';
+
   document.getElementById('pay-section').style.display = needsPay?'block':'none';
-  if(!needsPay){ S.currentPayment=null; }
-  renderCart();
+  document.getElementById('simple-op-form').style.display = isSimple?'block':'none';
+  document.getElementById('products-op-form').style.display = isSimple?'none':'block';
+
+  if(!needsPay) S.currentPayment=null;
+
+  if(op==='gasto'){
+    document.getElementById('simple-op-concept-label').textContent='Concepto del gasto';
+    document.getElementById('simple-op-concept').placeholder='Ej: Envio DHL, Material de empaque...';
+  } else if(op==='capital'){
+    document.getElementById('simple-op-concept-label').textContent='Nota / Descripcion (opcional)';
+    document.getElementById('simple-op-concept').placeholder='Ej: Aporte inicial, Inversion...';
+  }
+
+  if(!isSimple){ renderCart(); } else { document.getElementById('total-wrap').style.display='block'; updateTotals(); }
+
 }
 
 // ═══════════════════════════════ PAYMENT ═══════════════════════════════
@@ -870,15 +915,18 @@ function renderCart(){
       +'<span class="ci-remove" onclick="removeCart('+i+')"><i class="ti ti-x"></i></span></div>'
       +'<div class="ci-qty"><span class="ci-qty-label">Cantidad</span>'
       +'<button class="qty-btn" onclick="changeQty('+i+',-1)">-</button>'
-      +'<span class="qty-val">'+item.qty+'</span>'
+      +'<input type="number" class="qty-input" value="'+item.qty+'" min="1" onchange="setQty('+i+',this.value)" onclick="this.select()">'
       +'<button class="qty-btn" onclick="changeQty('+i+',1)">+</button></div>'
       +(showP
-        ?'<div class="ci-price-row"><span class="ci-price-label">Precio base</span><span class="ci-base-price">$'+item.basePrice.toFixed(2)+'</span></div>'
-        +'<div class="ci-price-row"><span class="ci-price-label">Precio real</span>'
-        +'<input type="number" step="0.01" min="0" class="price-input'+(mod?' modified':'')+'" value="'+item.price+'" onchange="onPriceChange('+i+',this.value)">'
-        +(mod?'<span class="mod-badge"><i class="ti ti-edit" style="font-size:12px"></i>Modificado</span>':'')+'</div>'
-        +(mod?'<div class="ci-comment"><div class="ci-comment-label"><i class="ti ti-alert-circle" style="font-size:12px"></i>Motivo obligatorio</div>'
-          +'<textarea class="comment-input" rows="2" placeholder="Ej: Descuento cliente..." onchange="onCommentChange('+i+',this.value)">'+item.comment+'</textarea></div>':'')
+        ?(S.currentOp==='compra'
+          ?'<div class="ci-price-row"><span class="ci-price-label">Precio compra</span>'
+          +'<input type="number" step="0.01" min="0" class="price-input" value="'+item.price+'" placeholder="0.00" onchange="onPriceChangeCompra('+i+',this.value)" onclick="this.select()"></div>'
+          :'<div class="ci-price-row"><span class="ci-price-label">Precio base</span><span class="ci-base-price">$'+item.basePrice.toFixed(2)+'</span></div>'
+          +'<div class="ci-price-row"><span class="ci-price-label">Precio venta</span>'
+          +'<input type="number" step="0.01" min="0" class="price-input'+(mod?' modified':'')+'" value="'+item.price+'" onchange="onPriceChange('+i+',this.value)" onclick="this.select()">'
+          +(mod?'<span class="mod-badge"><i class="ti ti-edit" style="font-size:12px"></i>Modificado</span>':'')+'</div>'
+          +(mod?'<div class="ci-comment"><div class="ci-comment-label"><i class="ti ti-alert-circle" style="font-size:12px"></i>Motivo obligatorio</div>'
+            +'<textarea class="comment-input" rows="2" placeholder="Ej: Descuento cliente..." onchange="onCommentChange('+i+',this.value)">'+item.comment+'</textarea></div>':''))
         :'')
       +'</div>';
   }).join('');
@@ -893,14 +941,23 @@ function onPriceChange(i,v){
 function onCommentChange(i,v){ S.cart[i].comment=v; }
 function removeCart(i){ S.cart.splice(i,1); renderCart(); }
 function changeQty(i,d){ S.cart[i].qty=Math.max(1,S.cart[i].qty+d); renderCart(); }
+function setQty(i,v){ var n=parseInt(v)||1; S.cart[i].qty=Math.max(1,n); renderCart(); }
+function onPriceChangeCompra(i,v){
+  var p=parseFloat(v)||0;
+  S.cart[i].price=p; S.cart[i].modified=false; S.cart[i].comment='';
+  updateTotals();
+}
 function updateTotals(){
-  var total=S.cart.reduce(function(s,c){ return s+c.price*c.qty; },0);
-  var units=S.cart.reduce(function(s,c){ return s+c.qty; },0);
-  var el; 
+  var isSimple=S.currentOp==='gasto'||S.currentOp==='capital';
+  var total=isSimple
+    ? parseFloat(document.getElementById('simple-op-amount')?document.getElementById('simple-op-amount').value:0)||0
+    : S.cart.reduce(function(s,c){ return s+c.price*c.qty; },0);
+  var units=isSimple?0:S.cart.reduce(function(s,c){ return s+c.qty; },0);
+  var el;
   el=document.getElementById('tot-oper');   if(el) el.textContent=S.currentOper||'-';
   el=document.getElementById('tot-pay');    if(el) el.textContent=S.currentPayment?PAY_LABELS[S.currentPayment]:'-';
-  el=document.getElementById('tot-prods');  if(el) el.textContent=S.cart.length;
-  el=document.getElementById('tot-units');  if(el) el.textContent=units;
+  el=document.getElementById('tot-prods');  if(el) el.textContent=isSimple?'-':S.cart.length;
+  el=document.getElementById('tot-units');  if(el) el.textContent=isSimple?'-':units;
   el=document.getElementById('tot-amount'); if(el) el.textContent='$'+total.toFixed(2);
 }
 function clearForm(){
@@ -909,17 +966,31 @@ function clearForm(){
   document.querySelectorAll('.op-card').forEach(function(c){ c.classList.remove('selected'); });
   document.getElementById('op-form').style.display='none';
   document.getElementById('pay-section').style.display='none';
+  document.getElementById('simple-op-form').style.display='none';
+  document.getElementById('products-op-form').style.display='block';
   document.getElementById('cart-wrap').innerHTML='';
   document.getElementById('cart-empty').style.display='block';
   document.getElementById('total-wrap').style.display='none';
+  var ca=document.getElementById('simple-op-concept'); if(ca) ca.value='';
+  var am=document.getElementById('simple-op-amount');  if(am) am.value='';
 }
 
 // ═══════════════════════════════ CONFIRM ═══════════════════════════════
 function confirmOp(){
   if(!S.currentOper){ showToast('Selecciona quien registra'); return; }
-  if(!S.cart.length){ showToast('Agrega al menos un producto'); return; }
-  var needsPay=S.currentOp==='venta'||S.currentOp==='compra';
+
+  var isSimple=S.currentOp==='gasto'||S.currentOp==='capital';
+  var needsPay=S.currentOp==='venta'||S.currentOp==='compra'||isSimple;
   if(needsPay && !S.currentPayment){ showToast('Selecciona el metodo de pago'); return; }
+
+  if(isSimple){
+    var amount=parseFloat(document.getElementById('simple-op-amount').value)||0;
+    if(amount<=0){ showToast('Ingresa un monto valido'); return; }
+    doConfirmOp();
+    return;
+  }
+
+  if(!S.cart.length){ showToast('Agrega al menos un producto'); return; }
   var bad=S.cart.filter(function(c){ return c.modified&&!c.comment.trim(); });
   if(bad.length){ showToast('Completa el motivo del precio modificado'); return; }
 
@@ -952,28 +1023,41 @@ function doConfirmOp(){
   var btn=document.getElementById('confirm-btn');
   btn.disabled=true; btn.innerHTML='<i class="ti ti-loader-2" style="animation:spin 1s linear infinite"></i>Guardando...';
 
-  var adds=['compra','devolucion'], removes=['venta','perdida'];
-  S.cart.forEach(function(item){
-    if(adds.indexOf(S.currentOp)>=0)    S.inventory[item.id]=(S.inventory[item.id]||0)+item.qty;
-    if(removes.indexOf(S.currentOp)>=0) S.inventory[item.id]=Math.max(0,(S.inventory[item.id]||0)-item.qty);
-  });
-  var total=S.cart.reduce(function(s,c){ return s+c.price*c.qty; },0);
+  var isSimple=S.currentOp==='gasto'||S.currentOp==='capital';
+  var total=0;
+  var opItems=[];
 
-  // Update caja
-  if(S.currentOp==='venta'  && S.currentPayment) S.caja[S.currentPayment]=(S.caja[S.currentPayment]||0)+total;
-  if(S.currentOp==='compra' && S.currentPayment) S.caja[S.currentPayment]=Math.max(0,(S.caja[S.currentPayment]||0)-total);
+  if(isSimple){
+    total=parseFloat(document.getElementById('simple-op-amount').value)||0;
+    var concept=document.getElementById('simple-op-concept').value.trim();
+    opItems=[{name:concept||S.currentOp,qty:1,price:total,dose:'',basePrice:0,modified:false,comment:''}];
+    // Update caja only
+    if(S.currentOp==='gasto'   && S.currentPayment) S.caja[S.currentPayment]=Math.max(0,(S.caja[S.currentPayment]||0)-total);
+    if(S.currentOp==='capital' && S.currentPayment) S.caja[S.currentPayment]=(S.caja[S.currentPayment]||0)+total;
+  } else {
+    var adds=['compra','devolucion'], removes=['venta','perdida'];
+    S.cart.forEach(function(item){
+      if(adds.indexOf(S.currentOp)>=0)    S.inventory[item.id]=(S.inventory[item.id]||0)+item.qty;
+      if(removes.indexOf(S.currentOp)>=0) S.inventory[item.id]=Math.max(0,(S.inventory[item.id]||0)-item.qty);
+    });
+    total=S.cart.reduce(function(s,c){ return s+c.price*c.qty; },0);
+    opItems=S.cart.map(function(c){ return JSON.parse(JSON.stringify(c)); });
+    if(S.currentOp==='venta'  && S.currentPayment) S.caja[S.currentPayment]=(S.caja[S.currentPayment]||0)+total;
+    if(S.currentOp==='compra' && S.currentPayment) S.caja[S.currentPayment]=Math.max(0,(S.caja[S.currentPayment]||0)-total);
+  }
 
   var op={
     id:Date.now(), type:S.currentOp, operator:S.currentOper, payment:S.currentPayment||null,
     date:new Date().toLocaleString('es-MX',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}),
-    items:S.cart.map(function(c){ return JSON.parse(JSON.stringify(c)); }), total:total
+    items:opItems, total:total
   };
   S.history.unshift(op);
 
   syncUp(op).then(function(){
     btn.disabled=false; btn.innerHTML='<i class="ti ti-check"></i>Confirmar Operacion';
     clearForm(); updateHeaderStat(); showToast('Operacion registrada');
-    setTimeout(function(){ goPage('inventario'); },700);
+    var dest=isSimple?'caja':'inventario';
+    setTimeout(function(){ goPage(dest); },700);
   });
 }
 
@@ -1012,7 +1096,7 @@ function updateHeaderStat(){
 }
 
 // ═══════════════════════════════ HISTORY ═══════════════════════════════
-var TL={venta:'Venta',compra:'Compra',devolucion:'Devolucion',perdida:'Perdida'};
+var TL={venta:'Venta',compra:'Compra',devolucion:'Devolucion',perdida:'Perdida',gasto:'Gasto',capital:'Capital'};
 function fHist(f,btn){
   histFilter=f;
   document.querySelectorAll('#page-historial .filter-chip').forEach(function(b){ b.classList.remove('active'); });
