@@ -701,25 +701,26 @@ function syncUp(op){
   var invRows = S.catalog.map(function(p){ return {product_id:p.id,stock:S.inventory[p.id]||0}; });
   // Sync caja
   var cajaRows = PAY_METHODS.map(function(m){ return {method:m,balance:S.caja[m]||0}; });
-  var promises = [];
   if(sbClient && S.online){
-    promises.push(sbClient.from('inventory').upsert(invRows,{onConflict:'product_id'}));
-    promises.push(sbClient.from('caja').upsert(cajaRows,{onConflict:'method'}));
+    sbRun(sbClient.from('inventory').upsert(invRows,{onConflict:'product_id'}));
+    sbRun(sbClient.from('caja').upsert(cajaRows,{onConflict:'method'}));
     if(op){
-      promises.push(sbClient.from('operations').upsert({
+      sbRun(sbClient.from('operations').upsert({
         id:op.id, type:op.type, operator:op.operator, payment:op.payment||null,
         items:op.items, total:op.total, created_at:new Date(op.id).toISOString()
       },{onConflict:'id'}));
     }
   }
-  return Promise.all(promises).then(function(){ saveLocal(); }).catch(function(e){ console.warn('syncUp error',e); saveLocal(); });
+  saveLocal();
+  return Promise.resolve();
 }
 
 function syncCajaUp(){
   saveLocal();
   if(!sbClient||!S.online) return Promise.resolve();
   var rows = PAY_METHODS.map(function(m){ return {method:m,balance:S.caja[m]||0}; });
-  return sbClient.from('caja').upsert(rows,{onConflict:'method'}).catch(function(e){ console.warn('caja sync error',e); });
+  sbRun(sbClient.from('caja').upsert(rows,{onConflict:'method'}));
+  return Promise.resolve();
 }
 
 function doConnect(){
