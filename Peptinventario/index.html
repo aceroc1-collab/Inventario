@@ -1040,7 +1040,7 @@ function doTransfer(){
   syncCajaUp().then(function(){
     // Save transfer to Supabase
     if(sbClient&&S.online){
-      sbClient.from('caja_transfers').insert({from_method:from,to_method:to,amount:move,note:note||null}).catch(function(e){ console.warn(e); });
+      sbRun(sbClient.from('caja_transfers').insert({from_method:from,to_method:to,amount:move,note:note||null}));
     }
   });
   document.getElementById('xfer-amount').value='';
@@ -1103,6 +1103,8 @@ function toggleForm(formId,btnId,resetLabel){
   if(f.style.display==='none'){ f.style.display='block'; if(b) b.innerHTML='<i class="ti ti-x"></i>Cancelar'; }
   else{ f.style.display='none'; if(b) b.innerHTML='<i class="ti ti-plus"></i>'+resetLabel; }
 }
+function sbRun(promise){ if(promise && promise.then) promise.then(function(){}).catch(function(e){ console.warn('SB:',e); }); }
+
 function addProduct(){
   var name=document.getElementById('np-name').value.trim();
   var dose=document.getElementById('np-dose').value.trim();
@@ -1111,10 +1113,9 @@ function addProduct(){
   var id='p_'+Date.now();
   var prod={id:id,name:name,dose:dose||'-',price:price};
   S.catalog.push(prod); S.inventory[id]=0;
-  // Sync to Supabase catalog table
   if(sbClient&&S.online){
-    sbClient.from('catalog').upsert({id:id,name:name,dose:dose||'-',price:price,sort_order:S.catalog.length},{onConflict:'id'}).catch(function(e){ console.warn(e); });
-    sbClient.from('inventory').upsert({product_id:id,stock:0},{onConflict:'product_id'}).catch(function(e){ console.warn(e); });
+    sbRun(sbClient.from('catalog').upsert({id:id,name:name,dose:dose||'-',price:price,sort_order:S.catalog.length},{onConflict:'id'}));
+    sbRun(sbClient.from('inventory').upsert({product_id:id,stock:0},{onConflict:'product_id'}));
   }
   saveLocal();
   document.getElementById('np-name').value=''; document.getElementById('np-dose').value=''; document.getElementById('np-price').value='';
@@ -1136,15 +1137,13 @@ function saveEdit(){
   p.name=document.getElementById('ep-name').value.trim();
   p.dose=document.getElementById('ep-dose').value.trim();
   p.price=parseFloat(document.getElementById('ep-price').value)||p.price;
-  if(sbClient&&S.online){
-    sbClient.from('catalog').upsert({id:p.id,name:p.name,dose:p.dose,price:p.price},{onConflict:'id'}).catch(function(e){ console.warn(e); });
-  }
+  if(sbClient&&S.online){ sbRun(sbClient.from('catalog').upsert({id:p.id,name:p.name,dose:p.dose,price:p.price},{onConflict:'id'})); }
   saveLocal(); closeEdit(); renderAjustes(); renderInv(); showToast('Producto actualizado');
 }
 function delProduct(i){
   if(!confirm('Eliminar '+S.catalog[i].name+'?')) return;
   var id=S.catalog[i].id;
-  if(sbClient&&S.online){ sbClient.from('catalog').update({active:false}).eq('id',id).catch(function(e){ console.warn(e); }); }
+  if(sbClient&&S.online){ sbRun(sbClient.from('catalog').update({active:false}).eq('id',id)); }
   S.catalog.splice(i,1); saveLocal(); renderAjustes(); showToast('Producto eliminado');
 }
 
@@ -1155,14 +1154,14 @@ function addOperator(){
   if(!name){ showToast('Escribe el nombre del operador'); return; }
   if(S.operators.indexOf(name)>=0){ showToast('Ya existe ese operador'); return; }
   S.operators.push(name);
-  if(sbClient&&S.online){ sbClient.from('operators').upsert({name:name,active:true},{onConflict:'name'}).catch(function(e){ console.warn(e); }); }
+  if(sbClient&&S.online){ sbRun(sbClient.from('operators').upsert({name:name,active:true},{onConflict:'name'})); }
   saveLocal(); if(inp) inp.value='';
   renderAjustes(); renderOperChips(); showToast('Operador agregado');
 }
 function delOperator(i){
   if(!confirm('Eliminar '+S.operators[i]+'?')) return;
   var name=S.operators[i];
-  if(sbClient&&S.online){ sbClient.from('operators').update({active:false}).eq('name',name).catch(function(e){ console.warn(e); }); }
+  if(sbClient&&S.online){ sbRun(sbClient.from('operators').update({active:false}).eq('name',name)); }
   S.operators.splice(i,1); saveLocal(); renderAjustes(); renderOperChips(); showToast('Operador eliminado');
 }
 
