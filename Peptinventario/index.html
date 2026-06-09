@@ -308,6 +308,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;f
   <div class="nav-tab" onclick="goPage('historial')" id="tab-historial"><i class="ti ti-history"></i>Historial</div>
   <div class="nav-tab" onclick="goPage('catalogo')" id="tab-catalogo"><i class="ti ti-tag"></i>Precios</div>
   <div class="nav-tab" onclick="goPage('caja')" id="tab-caja"><i class="ti ti-wallet"></i>Caja</div>
+  <div class="nav-tab" onclick="goPage('finanzas')" id="tab-finanzas"><i class="ti ti-chart-bar"></i>P&L</div>
   <div class="nav-tab" onclick="goPage('ajustes')" id="tab-ajustes"><i class="ti ti-settings"></i>Config</div>
 </div>
 
@@ -343,7 +344,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;f
       <div class="op-name">Gasto</div><div class="op-desc">Egreso de caja</div>
     </div>
     <div class="op-card capital" onclick="selectOpType('capital')" id="op-capital">
-      <i class="ti ti-plus-circle"></i>
+      <i class="ti ti-trending-up"></i>
       <div class="op-name">Capital</div><div class="op-desc">Ingreso a caja</div>
     </div>
   </div>
@@ -499,6 +500,73 @@ html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;f
   <div class="caja-section">
     <div class="section-label"><i class="ti ti-history" style="font-size:13px"></i>Historial de Transferencias</div>
     <div id="xfer-hist-list"><div class="empty" style="padding:16px"><p>Sin transferencias registradas</p></div></div>
+  </div>
+</div>
+
+
+<!-- PAGE: FINANZAS -->
+<div class="page" id="page-finanzas">
+  <div class="ph"><h2>Estado de Resultados</h2><p>Resumen financiero del periodo</p><div class="ph-line"></div></div>
+
+  <!-- PERIOD FILTER -->
+  <div class="inv-filters" style="margin-bottom:16px">
+    <button class="filter-chip active" onclick="fFinanzas('today',this)">Hoy</button>
+    <button class="filter-chip" onclick="fFinanzas('week',this)">Esta semana</button>
+    <button class="filter-chip" onclick="fFinanzas('month',this)">Este mes</button>
+    <button class="filter-chip" onclick="fFinanzas('all',this)">Todo</button>
+  </div>
+
+  <!-- SUMMARY CARDS -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+    <div style="background:var(--green-faint);border:1px solid rgba(46,204,113,0.2);border-radius:var(--radius);padding:14px">
+      <div style="font-size:10px;color:#2ECC71;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px">Ventas</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:500;color:#2ECC71" id="fin-ventas">$0.00</div>
+      <div style="font-size:10px;color:var(--text3);margin-top:3px" id="fin-ventas-n">0 operaciones</div>
+    </div>
+    <div style="background:var(--blue-faint);border:1px solid rgba(52,152,219,0.2);border-radius:var(--radius);padding:14px">
+      <div style="font-size:10px;color:#3498DB;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px">Compras</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:500;color:#3498DB" id="fin-compras">$0.00</div>
+      <div style="font-size:10px;color:var(--text3);margin-top:3px" id="fin-compras-n">0 operaciones</div>
+    </div>
+    <div style="background:rgba(230,126,34,0.08);border:1px solid rgba(230,126,34,0.2);border-radius:var(--radius);padding:14px">
+      <div style="font-size:10px;color:#E67E22;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px">Gastos</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:500;color:#E67E22" id="fin-gastos">$0.00</div>
+      <div style="font-size:10px;color:var(--text3);margin-top:3px" id="fin-gastos-n">0 operaciones</div>
+    </div>
+    <div style="background:rgba(155,89,182,0.08);border:1px solid rgba(155,89,182,0.2);border-radius:var(--radius);padding:14px">
+      <div style="font-size:10px;color:#9B59B6;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px">Capital</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:500;color:#9B59B6" id="fin-capital">$0.00</div>
+      <div style="font-size:10px;color:var(--text3);margin-top:3px" id="fin-capital-n">0 aportes</div>
+    </div>
+  </div>
+
+  <!-- UTILIDAD BRUTA -->
+  <div style="background:var(--bg3);border:1px solid var(--border-mid);border-radius:var(--radius);padding:14px;margin-bottom:10px">
+    <div style="font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px">Resultado del Periodo</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:12px;color:var(--text2)">Utilidad Bruta <span style="font-size:10px;color:var(--text3)">(Ventas - Compras)</span></span>
+      <span style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500" id="fin-bruta">$0.00</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:12px;color:var(--text2)">Utilidad Neta <span style="font-size:10px;color:var(--text3)">(Bruta - Gastos)</span></span>
+      <span style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500" id="fin-neta">$0.00</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0">
+      <span style="font-size:12px;color:var(--text2)">Margen de ganancia</span>
+      <span style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500" id="fin-margen">0%</span>
+    </div>
+  </div>
+
+  <!-- DESGLOSE POR METODO DE PAGO -->
+  <div style="background:var(--bg3);border:1px solid var(--border-mid);border-radius:var(--radius);padding:14px;margin-bottom:10px">
+    <div style="font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px">Ventas por Metodo de Pago</div>
+    <div id="fin-pay-breakdown"></div>
+  </div>
+
+  <!-- TOP PRODUCTOS -->
+  <div style="background:var(--bg3);border:1px solid var(--border-mid);border-radius:var(--radius);padding:14px">
+    <div style="font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px">Top Productos Vendidos</div>
+    <div id="fin-top-products"></div>
   </div>
 </div>
 
@@ -811,6 +879,7 @@ function goPage(name){
   if(name==='historial')  renderHist();
   if(name==='catalogo')   renderCatalog();
   if(name==='caja')       renderCaja();
+  if(name==='finanzas')   renderFinanzas();
   if(name==='ajustes')    renderAjustes();
 }
 
@@ -1300,6 +1369,131 @@ function delOperator(i){
   var name=S.operators[i];
   if(sbClient&&S.online){ sbRun(sbClient.from('operators').update({active:false}).eq('name',name)); }
   S.operators.splice(i,1); saveLocal(); renderAjustes(); renderOperChips(); showToast('Operador eliminado');
+}
+
+
+// ═══════════════════════════════ FINANZAS ═══════════════════════════════
+var finFilter = 'today';
+
+function fFinanzas(f, btn){
+  finFilter = f;
+  document.querySelectorAll('#page-finanzas .filter-chip').forEach(function(b){ b.classList.remove('active'); });
+  if(btn) btn.classList.add('active');
+  renderFinanzas();
+}
+
+function getFilteredOps(filter){
+  var now = new Date();
+  var start;
+  if(filter==='today'){
+    start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  } else if(filter==='week'){
+    var day = now.getDay()||7;
+    start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - day + 1);
+  } else if(filter==='month'){
+    start = new Date(now.getFullYear(), now.getMonth(), 1);
+  } else {
+    start = new Date(0);
+  }
+  return S.history.filter(function(h){
+    var d = new Date(h.id);
+    return d >= start;
+  });
+}
+
+function renderFinanzas(){
+  var ops = getFilteredOps(finFilter);
+
+  var ventas   = ops.filter(function(h){ return h.type==='venta'; });
+  var compras  = ops.filter(function(h){ return h.type==='compra'; });
+  var gastos   = ops.filter(function(h){ return h.type==='gasto'; });
+  var capitals = ops.filter(function(h){ return h.type==='capital'; });
+
+  var totVentas  = ventas.reduce(function(s,h){ return s+parseFloat(h.total||0); },0);
+  var totCompras = compras.reduce(function(s,h){ return s+parseFloat(h.total||0); },0);
+  var totGastos  = gastos.reduce(function(s,h){ return s+parseFloat(h.total||0); },0);
+  var totCapital = capitals.reduce(function(s,h){ return s+parseFloat(h.total||0); },0);
+
+  var bruta = totVentas - totCompras;
+  var neta  = bruta - totGastos;
+  var margen = totVentas > 0 ? (neta/totVentas*100) : 0;
+
+  // Summary cards
+  function setEl(id, val){ var el=document.getElementById(id); if(el) el.textContent=val; }
+  function colorEl(id, val){ var el=document.getElementById(id); if(el) el.style.color=val>=0?'#2ECC71':'#E74C3C'; }
+
+  setEl('fin-ventas',   '$'+totVentas.toFixed(2));
+  setEl('fin-ventas-n', ventas.length+' operaciones');
+  setEl('fin-compras',  '$'+totCompras.toFixed(2));
+  setEl('fin-compras-n',compras.length+' operaciones');
+  setEl('fin-gastos',   '$'+totGastos.toFixed(2));
+  setEl('fin-gastos-n', gastos.length+' operaciones');
+  setEl('fin-capital',  '$'+totCapital.toFixed(2));
+  setEl('fin-capital-n',capitals.length+' aportes');
+
+  var brutaEl=document.getElementById('fin-bruta');
+  if(brutaEl){ brutaEl.textContent='$'+bruta.toFixed(2); brutaEl.style.color=bruta>=0?'#2ECC71':'#E74C3C'; }
+  var netaEl=document.getElementById('fin-neta');
+  if(netaEl){ netaEl.textContent='$'+neta.toFixed(2); netaEl.style.color=neta>=0?'#2ECC71':'#E74C3C'; }
+  var margenEl=document.getElementById('fin-margen');
+  if(margenEl){ margenEl.textContent=margen.toFixed(1)+'%'; margenEl.style.color=margen>=0?'#2ECC71':'#E74C3C'; }
+
+  // Payment breakdown (ventas only)
+  var payEl=document.getElementById('fin-pay-breakdown');
+  if(payEl){
+    var byPay={};
+    PAY_METHODS.forEach(function(m){ byPay[m]=0; });
+    ventas.forEach(function(h){ if(h.payment) byPay[h.payment]=(byPay[h.payment]||0)+parseFloat(h.total||0); });
+    var hasAny=PAY_METHODS.some(function(m){ return byPay[m]>0; });
+    if(!hasAny){
+      payEl.innerHTML='<div style="font-size:12px;color:var(--text3);text-align:center;padding:8px">Sin ventas en este periodo</div>';
+    } else {
+      payEl.innerHTML=PAY_METHODS.map(function(m){
+        if(byPay[m]===0) return '';
+        var pct=totVentas>0?Math.round(byPay[m]/totVentas*100):0;
+        return '<div style="margin-bottom:10px">'
+          +'<div style="display:flex;justify-content:space-between;margin-bottom:4px">'
+          +'<span style="font-size:12px;color:var(--text2);display:flex;align-items:center;gap:6px">'
+          +'<i class="ti '+PAY_ICONS[m]+'" style="color:'+PAY_COLORS[m]+'"></i>'+PAY_LABELS[m]+'</span>'
+          +'<span style="font-family:'Cormorant Garamond',serif;font-size:15px;color:'+PAY_COLORS[m]+'">$'+byPay[m].toFixed(2)+' <span style="font-size:10px;color:var(--text3)">'+pct+'%</span></span>'
+          +'</div>'
+          +'<div style="background:var(--bg4);border-radius:3px;height:3px;overflow:hidden">'
+          +'<div style="height:100%;border-radius:3px;background:'+PAY_COLORS[m]+';width:'+pct+'%;transition:width .5s"></div>'
+          +'</div></div>';
+      }).join('');
+    }
+  }
+
+  // Top products
+  var topEl=document.getElementById('fin-top-products');
+  if(topEl){
+    var prodMap={};
+    ventas.forEach(function(h){
+      h.items.forEach(function(item){
+        var key=item.name+(item.dose?' '+item.dose:'');
+        if(!prodMap[key]) prodMap[key]={name:item.name,dose:item.dose,qty:0,total:0};
+        prodMap[key].qty+=item.qty||1;
+        prodMap[key].total+=parseFloat(item.price||0)*(item.qty||1);
+      });
+    });
+    var sorted=Object.values(prodMap).sort(function(a,b){ return b.total-a.total; }).slice(0,8);
+    if(!sorted.length){
+      topEl.innerHTML='<div style="font-size:12px;color:var(--text3);text-align:center;padding:8px">Sin ventas en este periodo</div>';
+    } else {
+      var maxTotal=sorted[0].total||1;
+      topEl.innerHTML=sorted.map(function(p,i){
+        var pct=Math.round(p.total/maxTotal*100);
+        return '<div style="margin-bottom:10px">'
+          +'<div style="display:flex;justify-content:space-between;margin-bottom:4px">'
+          +'<span style="font-size:12px;color:var(--text);font-weight:500">'+p.name+' <span style="color:var(--text3);font-weight:400">'+p.dose+'</span></span>'
+          +'<span style="font-size:11px;color:var(--text2)">'+p.qty+' uds &nbsp;·&nbsp; <span style="color:var(--gold-light);font-family:'Cormorant Garamond',serif;font-size:14px">$'+p.total.toFixed(2)+'</span></span>'
+          +'</div>'
+          +'<div style="background:var(--bg4);border-radius:3px;height:3px;overflow:hidden">'
+          +'<div style="height:100%;border-radius:3px;background:linear-gradient(90deg,var(--gold-dim),var(--gold));width:'+pct+'%;transition:width .5s"></div>'
+          +'</div></div>';
+      }).join('');
+    }
+  }
 }
 
 // ═══════════════════════════════ UTILS ═══════════════════════════════
