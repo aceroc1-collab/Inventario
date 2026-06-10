@@ -54,9 +54,8 @@ html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;f
 .nav-tab.active i{color:var(--gold)}
 
 /* PAGES */
-.page{display:none;padding:16px 14px 32px;animation:fadeUp .18s ease;max-width:860px;margin:0 auto}
+.page{display:none;padding:16px 14px 32px;animation:fadeUp .18s ease}
 .page.active{display:block}
-@media(min-width:900px){.page{padding:24px 20px 40px}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 
@@ -282,6 +281,26 @@ html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;f
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 .mt-8{margin-top:8px}.mt-12{margin-top:12px}
+
+/* KPI CARDS */
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+@media(min-width:760px){.kpi-grid{grid-template-columns:repeat(4,1fr)}}
+.kpi-card{background:var(--bg3);border:1px solid var(--border-mid);border-radius:var(--radius);overflow:hidden}
+.kpi-bar{height:3px;width:100%}
+.kpi-green .kpi-bar{background:#2ECC71}
+.kpi-gold .kpi-bar{background:var(--gold)}
+.kpi-blue .kpi-bar{background:#3498DB}
+.kpi-purple .kpi-bar{background:#9B59B6}
+.kpi-inner{padding:12px 14px 13px}
+.kpi-head{display:flex;align-items:center;gap:6px;margin-bottom:10px}
+.kpi-head i{font-size:14px}
+.kpi-green .kpi-head i{color:#2ECC71}
+.kpi-gold .kpi-head i{color:var(--gold)}
+.kpi-blue .kpi-head i{color:#3498DB}
+.kpi-purple .kpi-head i{color:#9B59B6}
+.kpi-head span{font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;font-weight:600}
+.kpi-value{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;line-height:1;margin-bottom:6px}
+.kpi-sub{font-size:10px;color:var(--text3);line-height:1.4}
 </style>
 </head>
 <body>
@@ -405,24 +424,36 @@ html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;f
   <!-- KPI CARDS -->
   <div class="kpi-grid">
     <div class="kpi-card kpi-green">
-      <div class="kpi-head"><i class="ti ti-currency-dollar"></i><span>Ventas Hoy</span></div>
-      <div class="kpi-value" style="color:#2ECC71" id="dash-ventas-hoy">$0</div>
-      <div class="kpi-sub" id="dash-ventas-cmp">&nbsp;</div>
+      <div class="kpi-bar"></div>
+      <div class="kpi-inner">
+        <div class="kpi-head"><i class="ti ti-currency-dollar"></i><span>Ventas Hoy</span></div>
+        <div class="kpi-value" style="color:#2ECC71" id="dash-ventas-hoy">$0</div>
+        <div class="kpi-sub" id="dash-ventas-cmp">&nbsp;</div>
+      </div>
     </div>
     <div class="kpi-card kpi-gold">
-      <div class="kpi-head"><i class="ti ti-activity"></i><span>Operaciones Hoy</span></div>
-      <div class="kpi-value" style="color:var(--gold-light)" id="dash-ops-hoy">0</div>
-      <div class="kpi-sub" id="dash-ops-detail">&nbsp;</div>
+      <div class="kpi-bar"></div>
+      <div class="kpi-inner">
+        <div class="kpi-head"><i class="ti ti-activity"></i><span>Operaciones Hoy</span></div>
+        <div class="kpi-value" style="color:var(--gold-light)" id="dash-ops-hoy">0</div>
+        <div class="kpi-sub" id="dash-ops-detail">&nbsp;</div>
+      </div>
     </div>
     <div class="kpi-card kpi-blue">
-      <div class="kpi-head"><i class="ti ti-package"></i><span>Valor Inventario</span></div>
-      <div class="kpi-value" style="color:#3498DB" id="dash-inv-val">$0</div>
-      <div class="kpi-sub" id="dash-inv-units">&nbsp;</div>
+      <div class="kpi-bar"></div>
+      <div class="kpi-inner">
+        <div class="kpi-head"><i class="ti ti-package"></i><span>Valor Inventario</span></div>
+        <div class="kpi-value" style="color:#3498DB" id="dash-inv-val">$0</div>
+        <div class="kpi-sub" id="dash-inv-units">&nbsp;</div>
+      </div>
     </div>
     <div class="kpi-card kpi-purple">
-      <div class="kpi-head"><i class="ti ti-wallet"></i><span>Caja Total</span></div>
-      <div class="kpi-value" style="color:#9B59B6" id="dash-caja-val">$0</div>
-      <div class="kpi-sub" id="dash-caja-top">&nbsp;</div>
+      <div class="kpi-bar"></div>
+      <div class="kpi-inner">
+        <div class="kpi-head"><i class="ti ti-wallet"></i><span>Caja Total</span></div>
+        <div class="kpi-value" style="color:#9B59B6" id="dash-caja-val">$0</div>
+        <div class="kpi-sub" id="dash-caja-top">&nbsp;</div>
+      </div>
     </div>
   </div>
 
