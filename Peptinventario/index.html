@@ -54,8 +54,9 @@ html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;f
 .nav-tab.active i{color:var(--gold)}
 
 /* PAGES */
-.page{display:none;padding:16px 14px 32px;animation:fadeUp .18s ease}
+.page{display:none;padding:16px 14px 32px;animation:fadeUp .18s ease;max-width:860px;margin:0 auto}
 .page.active{display:block}
+@media(min-width:900px){.page{padding:24px 20px 40px}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 
@@ -402,30 +403,26 @@ html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;f
   <div class="ph"><h2>Dashboard</h2><p>Resumen ejecutivo del negocio</p><div class="ph-line"></div></div>
 
   <!-- KPI CARDS -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
-    <div class="card" style="position:relative;overflow:hidden">
-      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#2ECC71,transparent)"></div>
-      <div style="font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px">Ventas Hoy</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:#2ECC71" id="dash-ventas-hoy">$0</div>
-      <div style="font-size:10px;margin-top:3px" id="dash-ventas-cmp">&nbsp;</div>
+  <div class="kpi-grid">
+    <div class="kpi-card kpi-green">
+      <div class="kpi-head"><i class="ti ti-currency-dollar"></i><span>Ventas Hoy</span></div>
+      <div class="kpi-value" style="color:#2ECC71" id="dash-ventas-hoy">$0</div>
+      <div class="kpi-sub" id="dash-ventas-cmp">&nbsp;</div>
     </div>
-    <div class="card" style="position:relative;overflow:hidden">
-      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent)"></div>
-      <div style="font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px">Operaciones Hoy</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:var(--gold-light)" id="dash-ops-hoy">0</div>
-      <div style="font-size:10px;color:var(--text3);margin-top:3px" id="dash-ops-detail">&nbsp;</div>
+    <div class="kpi-card kpi-gold">
+      <div class="kpi-head"><i class="ti ti-activity"></i><span>Operaciones Hoy</span></div>
+      <div class="kpi-value" style="color:var(--gold-light)" id="dash-ops-hoy">0</div>
+      <div class="kpi-sub" id="dash-ops-detail">&nbsp;</div>
     </div>
-    <div class="card" style="position:relative;overflow:hidden">
-      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#3498DB,transparent)"></div>
-      <div style="font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px">Valor Inventario</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:#3498DB" id="dash-inv-val">$0</div>
-      <div style="font-size:10px;color:var(--text3);margin-top:3px" id="dash-inv-units">&nbsp;</div>
+    <div class="kpi-card kpi-blue">
+      <div class="kpi-head"><i class="ti ti-package"></i><span>Valor Inventario</span></div>
+      <div class="kpi-value" style="color:#3498DB" id="dash-inv-val">$0</div>
+      <div class="kpi-sub" id="dash-inv-units">&nbsp;</div>
     </div>
-    <div class="card" style="position:relative;overflow:hidden">
-      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#9B59B6,transparent)"></div>
-      <div style="font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px">Caja Total</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:#9B59B6" id="dash-caja-val">$0</div>
-      <div style="font-size:10px;color:var(--text3);margin-top:3px" id="dash-caja-top">&nbsp;</div>
+    <div class="kpi-card kpi-purple">
+      <div class="kpi-head"><i class="ti ti-wallet"></i><span>Caja Total</span></div>
+      <div class="kpi-value" style="color:#9B59B6" id="dash-caja-val">$0</div>
+      <div class="kpi-sub" id="dash-caja-top">&nbsp;</div>
     </div>
   </div>
 
@@ -445,7 +442,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;f
   <!-- PAYMENT DONUT + TOP PRODUCTS -->
   <div class="card" style="margin-bottom:10px">
     <div style="font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px">Metodos de Pago (30 dias)</div>
-    <div style="height:180px;position:relative"><canvas id="chart-pay"></canvas></div>
+    <div style="height:200px;position:relative;max-width:420px;margin:0 auto"><canvas id="chart-pay"></canvas></div>
   </div>
 
   <div class="card" style="margin-bottom:10px">
