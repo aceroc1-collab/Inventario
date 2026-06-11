@@ -643,7 +643,11 @@ html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;f
   <div style="background:var(--bg3);border:1px solid var(--border-mid);border-radius:var(--radius);padding:14px;margin-bottom:10px">
     <div style="font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px">Resultado del Periodo</div>
     <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
-      <span style="font-size:12px;color:var(--text2)">Utilidad Bruta <span style="font-size:10px;color:var(--text3)">(Ventas - Compras)</span></span>
+      <span style="font-size:12px;color:var(--text2)">Costo de lo Vendido <span style="font-size:10px;color:var(--text3)" id="fin-cogs-label">(COGS)</span></span>
+      <span style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;color:#E74C3C" id="fin-cogs">$0.00</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:12px;color:var(--text2)">Utilidad Bruta <span style="font-size:10px;color:var(--text3)" id="fin-bruta-label">(Ventas - COGS)</span></span>
       <span style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500" id="fin-bruta">$0.00</span>
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
@@ -705,9 +709,11 @@ html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;f
       <input id="np-name" type="text" class="sb-input" placeholder="Ej: Ipamorelin">
       <div class="form-row">
         <div><div class="sb-label">Dosis</div><input id="np-dose" type="text" class="sb-input" placeholder="10 mg" style="margin-bottom:0"></div>
-        <div><div class="sb-label">Precio USD</div><input id="np-price" type="number" class="sb-input" placeholder="100" style="margin-bottom:0"></div>
+        <div><div class="sb-label">Precio Venta</div><input id="np-price" type="number" class="sb-input" placeholder="100" style="margin-bottom:0"></div>
       </div>
-      <button class="btn btn-primary mt-8" onclick="addProduct()"><i class="ti ti-check"></i>Guardar</button>
+      <div class="sb-label" style="margin-top:10px">Costo de Compra</div>
+      <input id="np-cost" type="number" class="sb-input" placeholder="0.00 — precio que pagas al proveedor" min="0" step="0.01">
+      <button class="btn btn-primary" onclick="addProduct()"><i class="ti ti-check"></i>Guardar</button>
     </div>
   </div>
 
@@ -743,10 +749,13 @@ html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;f
     <input id="ep-name" type="text" class="sb-input">
     <div class="form-row">
       <div><div class="sb-label">Dosis</div><input id="ep-dose" type="text" class="sb-input" style="margin-bottom:0"></div>
-      <div><div class="sb-label">Precio USD</div><input id="ep-price" type="number" class="sb-input" style="margin-bottom:0"></div>
+      <div><div class="sb-label">Precio Venta</div><input id="ep-price" type="number" class="sb-input" style="margin-bottom:0"></div>
     </div>
+    <div class="sb-label mt-8" style="margin-top:10px">Costo de Compra (USD)</div>
+    <input id="ep-cost" type="number" class="sb-input" placeholder="0.00 — precio que pagas al proveedor" min="0" step="0.01">
+    <div style="font-size:10px;color:var(--text3);margin-top:-8px;margin-bottom:12px">Usado para calcular ganancia real en P&L</div>
     <input type="hidden" id="ep-idx">
-    <button class="btn btn-primary mt-8" onclick="saveEdit()"><i class="ti ti-check"></i>Guardar</button>
+    <button class="btn btn-primary" onclick="saveEdit()"><i class="ti ti-check"></i>Guardar</button>
     <button class="btn btn-ghost" onclick="closeEdit()"><i class="ti ti-x"></i>Cancelar</button>
   </div>
 </div>
@@ -831,24 +840,24 @@ var PAY_ICONS   = {zelle:'ti-brand-paypal',binance:'ti-currency-bitcoin',zinli:'
 var PAY_COLORS  = {zelle:'#6C63FF',binance:'#F0B90B',zinli:'#00C9A7',cash:'#2ECC71'};
 
 var DEFAULT_CATALOG = [
-  {id:'klow',name:'KLOW Blend',dose:'-',price:220},
-  {id:'tb10',name:'TB-500',dose:'10 mg',price:170},
-  {id:'tirz20',name:'Tirzepatida',dose:'20 mg',price:240},
-  {id:'tirz10',name:'Tirzepatida',dose:'10 mg',price:130},
-  {id:'nad',name:'NAD+',dose:'500 mg',price:80},
-  {id:'tesa10',name:'Tesamorelin',dose:'10 mg',price:250},
-  {id:'selank',name:'Selank',dose:'5 mg',price:90},
-  {id:'semax',name:'Semax',dose:'10 mg',price:90},
-  {id:'mots',name:'MOTS-c',dose:'10 mg',price:120},
-  {id:'bpc10',name:'BPC-157',dose:'10 mg',price:90},
-  {id:'glow',name:'Glow',dose:'70 mg',price:80},
-  {id:'reta10',name:'Retatrutida',dose:'10 mg',price:150},
-  {id:'ipamorelin',name:'Ipamorelin',dose:'10 mg',price:100},
-  {id:'ghk100',name:'GHK-Cu',dose:'100 mg',price:60},
-  {id:'ghk50',name:'GHK-Cu',dose:'50 mg',price:40},
-  {id:'cjc',name:'CJC DAC',dose:'5 mg',price:110},
-  {id:'pt141',name:'PT-141',dose:'10 mg',price:100},
-  {id:'reta20',name:'Retatrutida',dose:'20 mg',price:200}
+  {id:'klow',name:'KLOW Blend',dose:'-',price:220,cost:0},
+  {id:'tb10',name:'TB-500',dose:'10 mg',price:170,cost:0},
+  {id:'tirz20',name:'Tirzepatida',dose:'20 mg',price:240,cost:0},
+  {id:'tirz10',name:'Tirzepatida',dose:'10 mg',price:130,cost:0},
+  {id:'nad',name:'NAD+',dose:'500 mg',price:80,cost:0},
+  {id:'tesa10',name:'Tesamorelin',dose:'10 mg',price:250,cost:0},
+  {id:'selank',name:'Selank',dose:'5 mg',price:90,cost:0},
+  {id:'semax',name:'Semax',dose:'10 mg',price:90,cost:0},
+  {id:'mots',name:'MOTS-c',dose:'10 mg',price:120,cost:0},
+  {id:'bpc10',name:'BPC-157',dose:'10 mg',price:90,cost:0},
+  {id:'glow',name:'Glow',dose:'70 mg',price:80,cost:0},
+  {id:'reta10',name:'Retatrutida',dose:'10 mg',price:150,cost:0},
+  {id:'ipamorelin',name:'Ipamorelin',dose:'10 mg',price:100,cost:0},
+  {id:'ghk100',name:'GHK-Cu',dose:'100 mg',price:60,cost:0},
+  {id:'ghk50',name:'GHK-Cu',dose:'50 mg',price:40,cost:0},
+  {id:'cjc',name:'CJC DAC',dose:'5 mg',price:110,cost:0},
+  {id:'pt141',name:'PT-141',dose:'10 mg',price:100,cost:0},
+  {id:'reta20',name:'Retatrutida',dose:'20 mg',price:200,cost:0}
 ];
 var DEFAULT_INV = {klow:2,tb10:18,tirz20:30,tirz10:30,nad:8,tesa10:6,selank:10,semax:10,mots:9,bpc10:54,glow:10,reta10:39,ipamorelin:10,ghk100:7,ghk50:8,cjc:20,pt141:10,reta20:20};
 var DEFAULT_OPERS = ['Wendy','David','Ricardo','Carlos'];
@@ -933,7 +942,7 @@ function syncDown(){
       });
     }
     if(!r5.error && r5.data && r5.data.length){
-      S.catalog = r5.data.map(function(row){ return {id:row.id,name:row.name,dose:row.dose,price:parseFloat(row.price)}; });
+      S.catalog = r5.data.map(function(row){ return {id:row.id,name:row.name,dose:row.dose,price:parseFloat(row.price),cost:parseFloat(row.cost||0)}; });
     }
     if(!r6.error && r6.data && r6.data.length){
       S.operators = r6.data.map(function(row){ return row.name; });
@@ -1296,6 +1305,11 @@ function doConfirmOp(){
     S.cart.forEach(function(item){
       if(adds.indexOf(S.currentOp)>=0)    S.inventory[item.id]=(S.inventory[item.id]||0)+item.qty;
       if(removes.indexOf(S.currentOp)>=0) S.inventory[item.id]=Math.max(0,(S.inventory[item.id]||0)-item.qty);
+      // When buying, update the cost of the product with the purchase price
+      if(S.currentOp==='compra' && item.price>0){
+        var catIdx=S.catalog.findIndex(function(p){ return p.id===item.id; });
+        if(catIdx>=0) S.catalog[catIdx].cost=item.price;
+      }
     });
     total=S.cart.reduce(function(s,c){ return s+c.price*c.qty; },0);
     opItems=S.cart.map(function(c){ return JSON.parse(JSON.stringify(c)); });
@@ -1468,7 +1482,19 @@ function renderCatalog(){
   S.catalog.forEach(function(p){ if(!groups[p.name]) groups[p.name]=[]; groups[p.name].push(p); });
   el.innerHTML=Object.keys(groups).map(function(name){
     return '<div class="cat-group"><div class="cat-group-name">'+name+'</div>'
-      +groups[name].map(function(p){ return '<div class="cat-row"><span class="cat-dose">'+p.dose+'</span><span class="cat-price">$'+p.price+'.00 USD</span></div>'; }).join('')+'</div>';
+      +groups[name].map(function(p){
+        var hasCost=p.cost&&p.cost>0;
+        var margin=hasCost&&p.price>0?Math.round((p.price-p.cost)/p.price*100):null;
+        return '<div class="cat-row">'
+          +'<span class="cat-dose">'+p.dose+'</span>'
+          +'<div style="display:flex;align-items:center;gap:10px">'
+          +(hasCost?'<span style="font-size:10px;color:var(--text3)">Costo: $'+p.cost+'</span>':'')
+          +(margin!==null?'<span style="font-size:10px;background:rgba(46,204,113,0.12);color:#2ECC71;padding:2px 7px;border-radius:10px;font-weight:600">'+margin+'%</span>':'')
+          +'<span class="cat-price">$'+p.price+' USD</span>'
+          +'</div>'
+          +'</div>';
+      }).join('')
+      +'</div>';
   }).join('');
 }
 
@@ -1543,8 +1569,16 @@ function renderAjustes(){
   var el=document.getElementById('prod-manage-list');
   if(el){
     el.innerHTML=S.catalog.map(function(p,i){
+      var hasCost = p.cost && p.cost > 0;
+      var margin  = hasCost && p.price > 0 ? Math.round((p.price-p.cost)/p.price*100) : null;
       return '<div class="prod-item">'
-        +'<div class="pmi-info"><div class="pmi-name">'+p.name+'</div><div class="pmi-dose">'+p.dose+'</div></div>'
+        +'<div class="pmi-info">'
+        +'<div class="pmi-name">'+p.name+'</div>'
+        +'<div class="pmi-dose">'+p.dose
+        +(hasCost?' &middot; <span style="color:var(--text3)">Costo: $'+p.cost+'</span>':'')
+        +(margin!==null?' &middot; <span style="color:#2ECC71;font-weight:600">'+margin+'% margen</span>':'')
+        +'</div>'
+        +'</div>'
         +'<span class="pmi-price">$'+p.price+'</span>'
         +'<div style="display:flex;gap:6px">'
         +'<button class="icon-btn" onclick="openEdit('+i+')"><i class="ti ti-pencil"></i></button>'
@@ -1575,16 +1609,20 @@ function addProduct(){
   var name=document.getElementById('np-name').value.trim();
   var dose=document.getElementById('np-dose').value.trim();
   var price=parseFloat(document.getElementById('np-price').value)||0;
-  if(!name||!price){ showToast('Completa nombre y precio'); return; }
+  var cost=parseFloat(document.getElementById('np-cost').value)||0;
+  if(!name||!price){ showToast('Completa nombre y precio de venta'); return; }
   var id='p_'+Date.now();
-  var prod={id:id,name:name,dose:dose||'-',price:price};
+  var prod={id:id,name:name,dose:dose||'-',price:price,cost:cost};
   S.catalog.push(prod); S.inventory[id]=0;
   if(sbClient&&S.online){
-    sbRun(sbClient.from('catalog').upsert({id:id,name:name,dose:dose||'-',price:price,sort_order:S.catalog.length},{onConflict:'id'}));
+    sbRun(sbClient.from('catalog').upsert({id:id,name:name,dose:dose||'-',price:price,cost:cost,sort_order:S.catalog.length},{onConflict:'id'}));
     sbRun(sbClient.from('inventory').upsert({product_id:id,stock:0},{onConflict:'product_id'}));
   }
   saveLocal();
-  document.getElementById('np-name').value=''; document.getElementById('np-dose').value=''; document.getElementById('np-price').value='';
+  document.getElementById('np-name').value='';
+  document.getElementById('np-dose').value='';
+  document.getElementById('np-price').value='';
+  document.getElementById('np-cost').value='';
   toggleForm('new-prod-form','new-prod-btn','+ Agregar Producto');
   renderAjustes(); showToast('Producto agregado');
 }
@@ -1593,6 +1631,7 @@ function openEdit(i){
   document.getElementById('ep-name').value=p.name;
   document.getElementById('ep-dose').value=p.dose;
   document.getElementById('ep-price').value=p.price;
+  document.getElementById('ep-cost').value=p.cost||0;
   document.getElementById('ep-idx').value=i;
   document.getElementById('edit-overlay').classList.add('open');
 }
@@ -1603,7 +1642,8 @@ function saveEdit(){
   p.name=document.getElementById('ep-name').value.trim();
   p.dose=document.getElementById('ep-dose').value.trim();
   p.price=parseFloat(document.getElementById('ep-price').value)||p.price;
-  if(sbClient&&S.online){ sbRun(sbClient.from('catalog').upsert({id:p.id,name:p.name,dose:p.dose,price:p.price},{onConflict:'id'})); }
+  p.cost=parseFloat(document.getElementById('ep-cost').value)||0;
+  if(sbClient&&S.online){ sbRun(sbClient.from('catalog').upsert({id:p.id,name:p.name,dose:p.dose,price:p.price,cost:p.cost},{onConflict:'id'})); }
   saveLocal(); closeEdit(); renderAjustes(); renderInv(); showToast('Producto actualizado');
 }
 function delProduct(i){
@@ -1897,7 +1937,18 @@ function renderFinanzas(){
   var totGastos  = gastos.reduce(function(s,h){ return s+parseFloat(h.total||0); },0);
   var totCapital = capitals.reduce(function(s,h){ return s+parseFloat(h.total||0); },0);
 
-  var bruta = totVentas - totCompras;
+  // COGS: sum of (qty sold x cost per product) for all ventas in period
+  var costMap={};
+  S.catalog.forEach(function(p){ costMap[p.id]=p.cost||0; });
+  var totCOGS = ventas.reduce(function(s,h){
+    return s + h.items.reduce(function(ss,it){
+      var unitCost = costMap[it.id]||0;
+      return ss + unitCost * (it.qty||1);
+    },0);
+  },0);
+
+  var hasCOGS = totCOGS > 0;
+  var bruta = hasCOGS ? (totVentas - totCOGS) : (totVentas - totCompras);
   var neta  = bruta - totGastos;
   var margen = totVentas > 0 ? (neta/totVentas*100) : 0;
 
@@ -1914,6 +1965,15 @@ function renderFinanzas(){
   setEl('fin-capital',  '$'+totCapital.toFixed(2));
   setEl('fin-capital-n',capitals.length+' aportes');
 
+  // COGS row
+  var cogsEl=document.getElementById('fin-cogs');
+  var cogsLbl=document.getElementById('fin-cogs-label');
+  var brutaLbl=document.getElementById('fin-bruta-label');
+  if(cogsEl){
+    cogsEl.textContent='$'+totCOGS.toFixed(2);
+    if(cogsLbl) cogsLbl.textContent = hasCOGS ? '(costo real de lo vendido)' : '(configura costos en productos)';
+    if(brutaLbl) brutaLbl.textContent = hasCOGS ? '(Ventas - COGS)' : '(Ventas - Compras del periodo)';
+  }
   var brutaEl=document.getElementById('fin-bruta');
   if(brutaEl){ brutaEl.textContent='$'+bruta.toFixed(2); brutaEl.style.color=bruta>=0?'#2ECC71':'#E74C3C'; }
   var netaEl=document.getElementById('fin-neta');
