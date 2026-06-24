@@ -379,6 +379,8 @@ html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;f
   <div class="nav-tab" onclick="goPage('caja')" id="tab-caja"><i class="ti ti-wallet"></i>Caja</div>
   <div class="nav-tab" onclick="goPage('finanzas')" id="tab-finanzas"><i class="ti ti-chart-bar"></i>P&L</div>
   <div class="nav-tab" onclick="goPage('vendedores')" id="tab-vendedores"><i class="ti ti-users"></i>Vendedores</div>
+  <div class="nav-tab" onclick="goPage('aprobaciones')" id="tab-aprobaciones"><i class="ti ti-checklist"></i>Aprobar<span id="aprob-badge" style="background:#F39C12;color:#111;border-radius:8px;padding:0 5px;font-size:10px;font-weight:700;margin-left:4px;display:none"></span></div>
+  <div class="nav-tab" onclick="goPage('misventas')" id="tab-misventas"><i class="ti ti-receipt"></i>Mis Ventas</div>
   <div class="nav-tab" onclick="goPage('ajustes')" id="tab-ajustes"><i class="ti ti-settings"></i>Config</div>
 </div>
 
@@ -756,6 +758,23 @@ html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;f
 </div>
 
 <!-- PAGE: AJUSTES -->
+<!-- PAGE: APROBACIONES (socios) -->
+<div class="page" id="page-aprobaciones">
+  <div class="ph"><h2>Aprobaciones</h2><p>Ventas de vendedores por confirmar</p><div class="ph-line"></div></div>
+  <div id="aprob-list"></div>
+</div>
+
+<!-- PAGE: MIS VENTAS (vendedor) -->
+<div class="page" id="page-misventas">
+  <div class="ph"><h2>Mis Ventas</h2><p>Tus ventas registradas</p><div class="ph-line"></div></div>
+  <div style="display:flex;gap:8px;margin-bottom:14px">
+    <div class="card" style="flex:1;text-align:center"><div style="font-size:22px;font-weight:700;color:var(--gold-light)" id="mv-count">0</div><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px">Ventas</div></div>
+    <div class="card" style="flex:1;text-align:center"><div style="font-size:22px;font-weight:700;color:#2ECC71" id="mv-aprob">0</div><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px">Aprobadas</div></div>
+    <div class="card" style="flex:1;text-align:center"><div style="font-size:22px;font-weight:700;color:#F39C12" id="mv-pend">0</div><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px">Pendientes</div></div>
+  </div>
+  <div id="misventas-list"></div>
+</div>
+
 <div class="page" id="page-ajustes">
   <div class="ph"><h2>Configuracion</h2><p>Base de datos y productos</p><div class="ph-line"></div></div>
   <div class="setting-group"><div class="setting-title"><i class="ti ti-logout" style="font-size:14px"></i>Sesion</div><button class="btn btn-ghost" onclick="appLogout()"><i class="ti ti-logout"></i>Cerrar sesion / cambiar de usuario</button></div>
@@ -1016,9 +1035,10 @@ function syncDown(){
     if(!r2.error && r2.data){
       S.history = r2.data.map(function(row){
         var anulada = row.items && row.items.length && row.items[0].__anulada===true;
+        var pendiente = row.items && row.items.length && row.items[0].__pendiente===true;
         return {id:row.id,type:row.type,operator:row.operator,vendedor:row.vendedor||null,payment:row.payment||null,
           date:new Date(row.created_at).toLocaleString('es-MX',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}),
-          items:row.items,total:row.total,anulada:anulada};
+          items:row.items,total:row.total,anulada:anulada,pendiente:pendiente};
       });
     }
     if(!r3.error && r3.data) r3.data.forEach(function(row){ S.caja[row.method]=parseFloat(row.balance)||0; });
@@ -1233,15 +1253,18 @@ function appLogout(){ try{ localStorage.removeItem('pl_role'); }catch(e){} locat
 function applyRoleUI(){
   document.getElementById('access-gate').style.display='none';
   var isVend = APP_ROLE==='vendedor';
-  var allow = isVend ? {nueva:1, catalogo:1} : null;
+  var allow = isVend ? {nueva:1, catalogo:1, misventas:1} : null;
   document.querySelectorAll('.nav .nav-tab').forEach(function(t){
     var id=(t.id||'').replace('tab-','');
-    t.style.display = (!allow || allow[id]) ? '' : 'none';
+    var show = (!allow || allow[id]);
+    if(!isVend && id==='misventas') show=false;
+    t.style.display = show ? '' : 'none';
   });
+  var hs=document.querySelector('.header-stat'); if(hs) hs.style.display = isVend?'none':'';
   var vb=document.getElementById('vend-bar');
   if(vb){ vb.style.display = isVend?'flex':'none';
     if(isVend){ document.getElementById('vend-bar-name').textContent = APP_VEND.nombre+' ('+APP_VEND.codigo+')'; } }
-  if(isVend){ S.currentOper=APP_VEND.nombre; S.currentVendedor=APP_VEND.codigo; goPage('nueva'); lockVendNueva(); }
+  if(isVend){ S.currentOper=APP_VEND.nombre; S.currentVendedor=APP_VEND.codigo; renderMisVentas(); goPage('nueva'); lockVendNueva(); }
 }
 function lockVendNueva(){
   if(APP_ROLE!=='vendedor') return;
@@ -1252,8 +1275,66 @@ function lockVendNueva(){
   S.currentOper=APP_VEND.nombre; S.currentVendedor=APP_VEND.codigo;
 }
 
+// APROBACIONES Y MIS VENTAS
+function updateAprobBadge(){
+  var n=S.history.filter(function(o){ return o.pendiente && !o.anulada && o.type==='venta'; }).length;
+  var b=document.getElementById('aprob-badge'); if(b){ b.textContent=n>0?String(n):''; b.style.display=n>0?'inline':'none'; }
+}
+function renderAprob(){
+  var el=document.getElementById('aprob-list'); if(!el) return;
+  updateAprobBadge();
+  var pend=S.history.filter(function(o){ return o.pendiente && !o.anulada && o.type==='venta'; });
+  if(!pend.length){ el.innerHTML='<div style="font-size:13px;color:var(--text3);text-align:center;padding:24px">No hay ventas pendientes de aprobacion.</div>'; return; }
+  el.innerHTML=pend.map(function(o){
+    var items=(o.items||[]).map(function(i){ return esc(i.name)+' x'+i.qty; }).join(', ');
+    var vname=o.vendedor; S.vendedores.forEach(function(v){ if(v.codigo===o.vendedor) vname=v.nombre+' ('+o.vendedor+')'; });
+    return '<div class="card" style="margin-bottom:10px">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><b style="color:var(--text)">'+esc(vname)+'</b><span style="color:var(--gold-light);font-weight:700">$'+parseFloat(o.total||0).toFixed(2)+'</span></div>'
+      +'<div style="font-size:12px;color:var(--text2);margin-bottom:4px">'+items+'</div>'
+      +'<div style="font-size:11px;color:var(--text3);margin-bottom:10px">'+o.date+(o.payment?(' &middot; '+o.payment):'')+'</div>'
+      +'<div style="display:flex;gap:8px"><button class="btn btn-primary" style="flex:1;margin:0" onclick="approveVenta('+o.id+')"><i class="ti ti-check"></i>Aprobar</button>'
+      +'<button class="btn btn-danger" style="flex:1;margin:0" onclick="rejectVenta('+o.id+')"><i class="ti ti-x"></i>Rechazar</button></div>'
+      +'</div>';
+  }).join('');
+}
+function approveVenta(id){
+  var h=null; S.history.forEach(function(o){ if(o.id===id) h=o; }); if(!h||!h.pendiente) return;
+  (h.items||[]).forEach(function(item){ if(item.id) S.inventory[item.id]=Math.max(0,(S.inventory[item.id]||0)-item.qty); });
+  var total=parseFloat(h.total)||0;
+  if(h.payment) S.caja[h.payment]=(S.caja[h.payment]||0)+total;
+  h.pendiente=false; if(h.items&&h.items.length) h.items[0].__pendiente=false;
+  saveLocal(); updateHeaderStat();
+  syncUp(h);
+  renderAprob(); try{ renderDashboard(); }catch(e){}
+  showToast('Venta aprobada');
+}
+function rejectVenta(id){
+  var idx=-1; S.history.forEach(function(o,i){ if(o.id===id) idx=i; }); if(idx<0) return;
+  S.history.splice(idx,1); saveLocal();
+  if(sbClient&&S.online) sbRun(sbClient.from('operations').delete().eq('id',id));
+  renderAprob(); showToast('Venta rechazada');
+}
+function renderMisVentas(){
+  var el=document.getElementById('misventas-list'); if(!el) return;
+  var code = (typeof APP_VEND!=='undefined'&&APP_VEND)?APP_VEND.codigo:S.currentVendedor;
+  var mine=S.history.filter(function(o){ return o.vendedor===code && o.type==='venta' && !o.anulada; });
+  var aprob=mine.filter(function(o){return !o.pendiente;}).length;
+  var pn=mine.filter(function(o){return o.pendiente;}).length;
+  var c=document.getElementById('mv-count'); if(c) c.textContent=mine.length;
+  var a=document.getElementById('mv-aprob'); if(a) a.textContent=aprob;
+  var pp=document.getElementById('mv-pend'); if(pp) pp.textContent=pn;
+  if(!mine.length){ el.innerHTML='<div style="font-size:13px;color:var(--text3);text-align:center;padding:24px">Aun no has registrado ventas.</div>'; return; }
+  el.innerHTML=mine.map(function(o){
+    var items=(o.items||[]).map(function(i){ return esc(i.name)+' x'+i.qty; }).join(', ');
+    var badge=o.pendiente?'<span style="background:#F39C1233;color:#F39C12;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700">PENDIENTE</span>':'<span style="background:#2ECC7133;color:#2ECC71;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700">APROBADA</span>';
+    return '<div class="card" style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'+badge+'<span style="color:var(--gold-light);font-weight:700">$'+parseFloat(o.total||0).toFixed(2)+'</span></div>'
+      +'<div style="font-size:12px;color:var(--text2)">'+items+'</div>'
+      +'<div style="font-size:11px;color:var(--text3)">'+o.date+'</div></div>';
+  }).join('');
+}
+
 function goPage(name){
-  if(APP_ROLE==='vendedor' && name!=='nueva' && name!=='catalogo') name='nueva';
+  if(APP_ROLE==='vendedor' && name!=='nueva' && name!=='catalogo' && name!=='misventas') name='nueva';
   document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
   document.querySelectorAll('.nav-tab').forEach(function(t){ t.classList.remove('active'); });
   document.getElementById('page-'+name).classList.add('active');
@@ -1267,6 +1348,8 @@ function goPage(name){
   if(name==='ajustes')    renderAjustes();
   if(name==='vendedores') renderVendedores();
   if(name==='nueva')      renderVendSelect();
+  if(name==='aprobaciones') renderAprob();
+  if(name==='misventas')   renderMisVentas();
   if(APP_ROLE==='vendedor' && name==='nueva') lockVendNueva();
 }
 
@@ -1520,6 +1603,7 @@ function doConfirmOp(){
   var isSimple=S.currentOp==='gasto'||S.currentOp==='capital';
   var total=0;
   var opItems=[];
+  var pend = (typeof APP_ROLE!=='undefined' && APP_ROLE==='vendedor' && S.currentOp==='venta');
 
   if(isSimple){
     total=parseFloat(document.getElementById('simple-op-amount').value)||0;
@@ -1531,8 +1615,8 @@ function doConfirmOp(){
   } else {
     var adds=['compra','devolucion'], removes=['venta','perdida'];
     S.cart.forEach(function(item){
-      if(adds.indexOf(S.currentOp)>=0)    S.inventory[item.id]=(S.inventory[item.id]||0)+item.qty;
-      if(removes.indexOf(S.currentOp)>=0) S.inventory[item.id]=Math.max(0,(S.inventory[item.id]||0)-item.qty);
+      if(!pend && adds.indexOf(S.currentOp)>=0)    S.inventory[item.id]=(S.inventory[item.id]||0)+item.qty;
+      if(!pend && removes.indexOf(S.currentOp)>=0) S.inventory[item.id]=Math.max(0,(S.inventory[item.id]||0)-item.qty);
       // When buying, update the cost of the product with the purchase price
       if(S.currentOp==='compra' && item.price>0){
         var catIdx=S.catalog.findIndex(function(p){ return p.id===item.id; });
@@ -1541,13 +1625,14 @@ function doConfirmOp(){
     });
     total=S.cart.reduce(function(s,c){ return s+c.price*c.qty; },0);
     opItems=S.cart.map(function(c){ return JSON.parse(JSON.stringify(c)); });
-    if(S.currentOp==='venta'  && S.currentPayment) S.caja[S.currentPayment]=(S.caja[S.currentPayment]||0)+total;
+    if(!pend && S.currentOp==='venta'  && S.currentPayment) S.caja[S.currentPayment]=(S.caja[S.currentPayment]||0)+total;
     if(S.currentOp==='compra' && S.currentPayment) S.caja[S.currentPayment]=(S.caja[S.currentPayment]||0)-total;
     if(S.currentOp==='devolucion' && S.currentPayment) S.caja[S.currentPayment]=(S.caja[S.currentPayment]||0)-total;
   }
 
+  if(pend && opItems.length) opItems[0].__pendiente=true;
   var op={
-    id:Date.now(), type:S.currentOp, operator:S.currentOper, vendedor:S.currentVendedor||null, payment:S.currentPayment||null,
+    id:Date.now(), type:S.currentOp, operator:S.currentOper, vendedor:S.currentVendedor||null, payment:S.currentPayment||null, pendiente:pend||false,
     date:new Date().toLocaleString('es-MX',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}),
     items:opItems, total:total
   };
@@ -1556,8 +1641,8 @@ function doConfirmOp(){
   syncUp(op).then(function(){
     confirmBusy=false;
     btn.disabled=false; btn.innerHTML='<i class="ti ti-check"></i>Confirmar Operacion';
-    clearForm(); updateHeaderStat(); showToast('Operacion registrada');
-    var dest=isSimple?'caja':'inventario';
+    clearForm(); updateHeaderStat(); showToast(pend?'Venta enviada para aprobacion':'Operacion registrada');
+    var dest = pend ? 'misventas' : (isSimple?'caja':'inventario');
     setTimeout(function(){ goPage(dest); },700);
   });
 }
@@ -1929,9 +2014,9 @@ function renderDashboard(){
     if(d >= todayStart){
       opsHoy++;
       opsByType[h.type]=(opsByType[h.type]||0)+1;
-      if(h.type==='venta') ventasHoy += parseFloat(h.total||0);
+      if(h.type==='venta' && !h.pendiente) ventasHoy += parseFloat(h.total||0);
     } else if(d >= yestStart && d < todayStart){
-      if(h.type==='venta') ventasAyer += parseFloat(h.total||0);
+      if(h.type==='venta' && !h.pendiente) ventasAyer += parseFloat(h.total||0);
     }
   });
 
@@ -2075,7 +2160,7 @@ function renderDashboard(){
   // ── OPERATOR RANKING (30d) ──
   var operMap={};
   S.history.forEach(function(h){
-    if(h.type!=='venta'||!h.operator) return;
+    if(h.type!=='venta'||!h.operator||h.pendiente) return;
     if(new Date(h.id) < days30) return;
     if(!operMap[h.operator]) operMap[h.operator]={total:0,count:0};
     operMap[h.operator].total+=parseFloat(h.total||0);
@@ -2106,7 +2191,7 @@ function renderDashboard(){
   // VENDEDOR RANKING
   var vendMap={};
   S.history.forEach(function(h){
-    if(h.type!=='venta' || !h.vendedor || h.anulada) return;
+    if(h.type!=='venta' || !h.vendedor || h.anulada || h.pendiente) return;
     var d=new Date(h.id); if(d<days30) return;
     if(!vendMap[h.vendedor]) vendMap[h.vendedor]={total:0,count:0};
     vendMap[h.vendedor].total+=parseFloat(h.total||0); vendMap[h.vendedor].count++;
@@ -2337,7 +2422,7 @@ function downloadCSV(){
 }
 
 // ═══════════════════════════════ UTILS ═══════════════════════════════
-function updateAll(){ renderInv(); renderHist(); updateHeaderStat(); renderOperChips(); renderVendSelect(); renderVendedores(); }
+function updateAll(){ renderInv(); renderHist(); updateHeaderStat(); renderOperChips(); renderVendSelect(); renderVendedores(); updateAprobBadge(); if(typeof APP_ROLE!=='undefined'&&APP_ROLE==='vendedor') renderMisVentas(); }
 function esc(s){ return String(s).replace(/'/g,"\\'"); }
 
 var toastT;
@@ -2349,7 +2434,7 @@ function showToast(msg){
 
 // ═══════════════════════════════ INIT ═══════════════════════════════
 loadLocal();
-renderOperChips(); renderVendSelect(); updateHeaderStat(); updateDot();
+renderOperChips(); renderVendSelect(); updateHeaderStat(); updateDot(); updateAprobBadge();
 
 var cfg=getSBCfg();
 var url=(cfg&&cfg.url)?cfg.url:SB_URL;
