@@ -330,6 +330,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;f
   <div class="nav-tab" onclick="goPage('catalogo')" id="tab-catalogo"><i class="ti ti-tag"></i>Precios</div>
   <div class="nav-tab" onclick="goPage('caja')" id="tab-caja"><i class="ti ti-wallet"></i>Caja</div>
   <div class="nav-tab" onclick="goPage('finanzas')" id="tab-finanzas"><i class="ti ti-chart-bar"></i>P&L</div>
+  <div class="nav-tab" onclick="goPage('vendedores')" id="tab-vendedores"><i class="ti ti-users"></i>Vendedores</div>
   <div class="nav-tab" onclick="goPage('ajustes')" id="tab-ajustes"><i class="ti ti-settings"></i>Config</div>
 </div>
 
@@ -340,6 +341,13 @@ html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;f
   <div class="oper-section">
     <div class="section-label"><i class="ti ti-user-circle" style="font-size:14px"></i>Quien registra</div>
     <div class="oper-chips" id="oper-chips"></div>
+  </div>
+
+  <div class="oper-section" id="vend-section">
+    <div class="section-label"><i class="ti ti-user-dollar" style="font-size:14px"></i>Vendedor (opcional)</div>
+    <select class="sb-select" id="vend-select" onchange="selectVendedor(this.value)">
+      <option value="">- Sin vendedor -</option>
+    </select>
   </div>
 
   <div class="op-type-label">Tipo de movimiento</div>
@@ -673,6 +681,26 @@ html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;f
   </div>
 </div>
 
+<!-- PAGE: VENDEDORES -->
+<div class="page" id="page-vendedores">
+  <div class="ph"><h2>Vendedores</h2><p>Empleados de ventas y sus codigos</p><div class="ph-line"></div></div>
+
+  <div class="setting-group">
+    <div class="setting-title"><i class="ti ti-user-plus" style="font-size:14px"></i>Registrar vendedor</div>
+    <div class="sb-label">Nombre completo</div>
+    <input id="vend-nombre" type="text" class="sb-input" placeholder="Nombre y apellido">
+    <div class="sb-label">Telefono / WhatsApp (opcional)</div>
+    <input id="vend-tel" type="text" class="sb-input" placeholder="+58 ...">
+    <button class="btn btn-primary" onclick="addVendedor()"><i class="ti ti-check"></i>Crear codigo</button>
+    <div id="vend-msg" style="font-size:12px;margin-top:8px"></div>
+  </div>
+
+  <div class="setting-group">
+    <div class="setting-title"><i class="ti ti-users" style="font-size:14px"></i>Vendedores registrados</div>
+    <div id="vend-list"></div>
+  </div>
+</div>
+
 <!-- PAGE: AJUSTES -->
 <div class="page" id="page-ajustes">
   <div class="ph"><h2>Configuracion</h2><p>Base de datos y productos</p><div class="ph-line"></div></div>
@@ -866,10 +894,10 @@ var DEFAULT_CAJA = {zelle:0,binance:0,zinli:0,cash:0};
 // ═══════════════════════════════ STATE ═══════════════════════════════
 var sbClient = null;
 var S = {
-  catalog:[], operators:[], inventory:{}, history:[],
+  catalog:[], operators:[], vendedores:[], inventory:{}, history:[],
   caja:{zelle:0,binance:0,zinli:0,cash:0},
   xferHistory:[],
-  currentOp:null, currentOper:null, currentPayment:null,
+  currentOp:null, currentOper:null, currentVendedor:null, currentPayment:null,
   cart:[], modalSel:[], online:navigator.onLine
 };
 var invFilter='all', histFilter='all';
@@ -880,7 +908,7 @@ window.addEventListener('offline', function(){ S.online=false; updateDot(); show
 // ═══════════════════════════════ LOCAL STORAGE ═══════════════════════════════
 var LS_KEY = 'pl4';
 function saveLocal(){
-  try{ localStorage.setItem(LS_KEY, JSON.stringify({catalog:S.catalog,operators:S.operators,inventory:S.inventory,history:S.history,caja:S.caja,xferHistory:S.xferHistory})); }catch(e){}
+  try{ localStorage.setItem(LS_KEY, JSON.stringify({catalog:S.catalog,operators:S.operators,vendedores:S.vendedores,inventory:S.inventory,history:S.history,caja:S.caja,xferHistory:S.xferHistory})); }catch(e){}
 }
 function loadLocal(){
   try{
@@ -889,6 +917,7 @@ function loadLocal(){
       var d = JSON.parse(raw);
       S.catalog      = (d.catalog   && d.catalog.length)   ? d.catalog   : DEFAULT_CATALOG.slice();
       S.operators    = (d.operators && d.operators.length) ? d.operators : DEFAULT_OPERS.slice();
+      S.vendedores   = d.vendedores || [];
       S.inventory    = d.inventory    || {};
       S.history      = d.history      || [];
       S.caja         = d.caja         || Object.assign({},DEFAULT_CAJA);
@@ -923,13 +952,14 @@ function syncDown(){
   var p4 = sbClient.from('caja_transfers').select('*').order('created_at',{ascending:false}).limit(100);
   var p5 = sbClient.from('catalog').select('*').order('sort_order',{ascending:true});
   var p6 = sbClient.from('operators').select('name').eq('active',true);
-  return Promise.all([p1,p2,p3,p4,p5,p6]).then(function(results){
-    var r1=results[0],r2=results[1],r3=results[2],r4=results[3],r5=results[4],r6=results[5];
+  var p7 = sbClient.from('vendedores').select('*');
+  return Promise.all([p1,p2,p3,p4,p5,p6,p7]).then(function(results){
+    var r1=results[0],r2=results[1],r3=results[2],r4=results[3],r5=results[4],r6=results[5],r7=results[6];
     if(!r1.error && r1.data) r1.data.forEach(function(row){ S.inventory[row.product_id]=row.stock; });
     if(!r2.error && r2.data){
       S.history = r2.data.map(function(row){
         var anulada = row.items && row.items.length && row.items[0].__anulada===true;
-        return {id:row.id,type:row.type,operator:row.operator,payment:row.payment||null,
+        return {id:row.id,type:row.type,operator:row.operator,vendedor:row.vendedor||null,payment:row.payment||null,
           date:new Date(row.created_at).toLocaleString('es-MX',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}),
           items:row.items,total:row.total,anulada:anulada};
       });
@@ -947,6 +977,9 @@ function syncDown(){
     if(!r6.error && r6.data && r6.data.length){
       S.operators = r6.data.map(function(row){ return row.name; });
     }
+    if(!r7.error && r7.data){
+      S.vendedores = r7.data.map(function(row){ return {codigo:row.codigo,nombre:row.nombre,telefono:row.telefono||'',active:row.active!==false}; });
+    }
     saveLocal(); updateAll();
   }).catch(function(e){ console.warn('syncDown error',e); });
 }
@@ -961,7 +994,7 @@ function syncUp(op){
     sbRun(sbClient.from('caja').upsert(cajaRows,{onConflict:'method'}));
     if(op){
       sbRun(sbClient.from('operations').upsert({
-        id:op.id, type:op.type, operator:op.operator, payment:op.payment||null,
+        id:op.id, type:op.type, operator:op.operator, vendedor:op.vendedor||null, payment:op.payment||null,
         items:op.items, total:op.total, created_at:new Date(op.id).toISOString()
       },{onConflict:'id'}));
     }
@@ -1028,6 +1061,63 @@ function updateDot(){
 }
 
 // ═══════════════════════════════ NAVIGATION ═══════════════════════════════
+// VENDEDORES (empleados de ventas, distintos de los socios)
+function genVendCode(){
+  var chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789', x='';
+  for(var i=0;i<5;i++) x+=chars.charAt(Math.floor(Math.random()*chars.length));
+  return 'PL-'+x;
+}
+function addVendedor(){
+  var nombre=(document.getElementById('vend-nombre').value||'').trim();
+  var tel=(document.getElementById('vend-tel').value||'').trim();
+  var msg=document.getElementById('vend-msg');
+  if(!nombre){ msg.style.color='#e25555'; msg.textContent='Escribe el nombre del vendedor.'; return; }
+  var codigo=genVendCode(), seen={}, g=0;
+  S.vendedores.forEach(function(v){ seen[v.codigo]=1; });
+  while(seen[codigo] && g<12){ codigo=genVendCode(); g++; }
+  var v={codigo:codigo, nombre:nombre, telefono:tel, active:true};
+  S.vendedores.push(v); saveLocal();
+  if(sbClient && S.online){ sbRun(sbClient.from('vendedores').upsert({codigo:v.codigo,nombre:v.nombre,telefono:v.telefono,active:true},{onConflict:'codigo'})); }
+  document.getElementById('vend-nombre').value=''; document.getElementById('vend-tel').value='';
+  msg.style.color='#2cc77c'; msg.textContent='Vendedor creado. Codigo: '+codigo;
+  renderVendedores(); renderVendSelect();
+}
+function toggleVendedor(codigo){
+  var v=null; S.vendedores.forEach(function(x){ if(x.codigo===codigo) v=x; }); if(!v) return;
+  v.active = v.active===false; saveLocal();
+  if(sbClient && S.online){ sbRun(sbClient.from('vendedores').upsert({codigo:v.codigo,nombre:v.nombre,telefono:v.telefono||'',active:v.active},{onConflict:'codigo'})); }
+  renderVendedores(); renderVendSelect();
+}
+function vendStats(codigo){
+  var n=0,t=0;
+  S.history.forEach(function(o){ if(o.vendedor===codigo && o.type==='venta' && !o.anulada){ n++; t+=(o.total||0); } });
+  return {n:n,t:t};
+}
+function renderVendedores(){
+  var el=document.getElementById('vend-list'); if(!el) return;
+  if(!S.vendedores.length){ el.innerHTML='<div style="font-size:12px;color:var(--text3)">Aun no hay vendedores. Crea el primero arriba.</div>'; return; }
+  el.innerHTML=S.vendedores.map(function(v){
+    var s=vendStats(v.codigo);
+    var act=v.active!==false;
+    var estado=act?'<span style="color:#2cc77c">activo</span>':'<span style="color:var(--text3)">inactivo</span>';
+    return '<div class="card" style="margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:10px">'+
+      '<div><div style="font-weight:600">'+esc(v.nombre)+'</div>'+
+      '<div style="font-size:12px;color:var(--text3)">Codigo: <b style="letter-spacing:1px">'+esc(v.codigo)+'</b> &middot; '+estado+'</div>'+
+      '<div style="font-size:12px;color:var(--text3)">'+s.n+' ventas &middot; $'+s.t.toFixed(2)+'</div></div>'+
+      '<button class="btn btn-ghost" style="width:auto;padding:6px 12px;margin:0;flex:none" onclick="toggleVendedor(\''+esc(v.codigo)+'\')">'+(act?'Desactivar':'Activar')+'</button>'+
+      '</div>';
+  }).join('');
+}
+function renderVendSelect(){
+  var sel=document.getElementById('vend-select'); if(!sel) return;
+  var cur=S.currentVendedor||'';
+  var act=S.vendedores.filter(function(v){ return v.active!==false; });
+  sel.innerHTML='<option value="">- Sin vendedor -</option>'+act.map(function(v){
+    return '<option value="'+esc(v.codigo)+'"'+(v.codigo===cur?' selected':'')+'>'+esc(v.nombre)+' ('+esc(v.codigo)+')</option>';
+  }).join('');
+}
+function selectVendedor(codigo){ S.currentVendedor=codigo||null; }
+
 function goPage(name){
   document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
   document.querySelectorAll('.nav-tab').forEach(function(t){ t.classList.remove('active'); });
@@ -1040,6 +1130,8 @@ function goPage(name){
   if(name==='dashboard')  renderDashboard();
   if(name==='finanzas')   renderFinanzas();
   if(name==='ajustes')    renderAjustes();
+  if(name==='vendedores') renderVendedores();
+  if(name==='nueva')      renderVendSelect();
 }
 
 // ═══════════════════════════════ OPERATORS ═══════════════════════════════
@@ -1189,7 +1281,7 @@ function updateTotals(){
   el=document.getElementById('tot-amount'); if(el) el.textContent='$'+total.toFixed(2);
 }
 function clearForm(){
-  S.cart=[]; S.currentOp=null; S.currentPayment=null;
+  S.cart=[]; S.currentOp=null; S.currentPayment=null; S.currentVendedor=null; var _vs=document.getElementById('vend-select'); if(_vs) _vs.value='';
   PAY_METHODS.forEach(function(m){ var el=document.getElementById('pay-'+m); if(el) el.classList.remove('active'); });
   document.querySelectorAll('.op-card').forEach(function(c){ c.classList.remove('selected'); });
   document.getElementById('op-form').style.display='none';
@@ -1319,7 +1411,7 @@ function doConfirmOp(){
   }
 
   var op={
-    id:Date.now(), type:S.currentOp, operator:S.currentOper, payment:S.currentPayment||null,
+    id:Date.now(), type:S.currentOp, operator:S.currentOper, vendedor:S.currentVendedor||null, payment:S.currentPayment||null,
     date:new Date().toLocaleString('es-MX',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}),
     items:opItems, total:total
   };
@@ -2086,7 +2178,7 @@ function downloadCSV(){
 }
 
 // ═══════════════════════════════ UTILS ═══════════════════════════════
-function updateAll(){ renderInv(); renderHist(); updateHeaderStat(); renderOperChips(); }
+function updateAll(){ renderInv(); renderHist(); updateHeaderStat(); renderOperChips(); renderVendSelect(); renderVendedores(); }
 function esc(s){ return String(s).replace(/'/g,"\\'"); }
 
 var toastT;
@@ -2098,7 +2190,7 @@ function showToast(msg){
 
 // ═══════════════════════════════ INIT ═══════════════════════════════
 loadLocal();
-renderOperChips(); updateHeaderStat(); updateDot();
+renderOperChips(); renderVendSelect(); updateHeaderStat(); updateDot();
 
 var cfg=getSBCfg();
 var url=(cfg&&cfg.url)?cfg.url:SB_URL;
