@@ -48,7 +48,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;f
 /* NAV */
 .nav{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none}
 .nav::-webkit-scrollbar{display:none}
-.nav-tab{flex:1;min-width:55px;padding:10px 4px 9px;text-align:center;font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+.nav-tab{flex:0 0 auto;min-width:72px;padding:10px 12px 9px;text-align:center;font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
 .nav-tab i{display:block;font-size:17px;margin-bottom:2px}
 .nav-tab.active{color:var(--gold-light);border-bottom-color:var(--gold)}
 .nav-tab.active i{color:var(--gold)}
@@ -341,21 +341,11 @@ html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;f
       <div id="gate-socio-msg" style="font-size:12px;color:#e25555;margin-top:8px"></div>
     </div>
     <div id="gate-vend" style="display:none">
-      <div style="display:flex;gap:6px;margin-bottom:12px">
-        <button class="btn btn-ghost" id="gv-tab-login" onclick="gateVendTab('login')" style="flex:1">Ya tengo codigo</button>
-        <button class="btn btn-ghost" id="gv-tab-new" onclick="gateVendTab('new')" style="flex:1">Soy nuevo</button>
-      </div>
       <div id="gate-vend-login">
-        <div class="sb-label">Tu codigo</div>
+        <div class="sb-label">Tu codigo de vendedor</div>
         <input id="gate-vcode" type="text" class="sb-input" placeholder="PL-XXXXX" onkeydown="if(event.key==='Enter')gateVendLogin()">
         <button class="btn btn-primary" onclick="gateVendLogin()"><i class="ti ti-login"></i>Entrar</button>
-      </div>
-      <div id="gate-vend-new" style="display:none">
-        <div class="sb-label">Tu nombre</div>
-        <input id="gate-vname" type="text" class="sb-input" placeholder="Nombre y apellido">
-        <div class="sb-label">Telefono (opcional)</div>
-        <input id="gate-vtel" type="text" class="sb-input" placeholder="+58 ...">
-        <button class="btn btn-primary" onclick="gateVendRegister()"><i class="ti ti-user-plus"></i>Registrarme</button>
+        <div style="font-size:11px;color:#8a8f98;margin-top:10px;line-height:1.5">Solo los socios pueden crear vendedores. Si no tienes codigo, solicitalo a un socio del equipo.</div>
       </div>
       <button class="btn btn-ghost mt-8" onclick="gateShow('choose')">Volver</button>
       <div id="gate-vend-msg" style="font-size:12px;margin-top:8px"></div>
@@ -1200,7 +1190,6 @@ function gateShow(which){
   document.getElementById('gate-choose').style.display = which==='choose'?'block':'none';
   document.getElementById('gate-socio').style.display = which==='socio'?'block':'none';
   document.getElementById('gate-vend').style.display = which==='vend'?'block':'none';
-  if(which==='vend') gateVendTab('login');
 }
 function gateVendTab(t){
   document.getElementById('gate-vend-login').style.display = t==='login'?'block':'none';
