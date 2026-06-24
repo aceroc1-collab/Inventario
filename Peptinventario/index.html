@@ -321,6 +321,54 @@ html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;f
   </div>
 </div>
 
+<!-- ACCESS GATE (candado) -->
+<div id="access-gate" style="position:fixed;inset:0;z-index:9999;background:#0d0f12;display:none;align-items:center;justify-content:center;padding:20px;overflow:auto">
+  <div style="width:100%;max-width:360px">
+    <div style="text-align:center;margin-bottom:18px">
+      <img src="public/logo.png" alt="PeptiLab" style="height:54px;margin-bottom:8px">
+      <div style="font-size:20px;font-weight:700;letter-spacing:1px;color:#fff">PEPTILAB</div>
+      <div style="font-size:11px;color:#8a8f98;letter-spacing:2px;text-transform:uppercase">Acceso</div>
+    </div>
+    <div id="gate-choose">
+      <button class="btn btn-primary" onclick="gateShow('socio')"><i class="ti ti-shield-lock"></i>Soy del equipo (socio)</button>
+      <button class="btn btn-ghost mt-8" onclick="gateShow('vend')"><i class="ti ti-user-dollar"></i>Soy vendedor</button>
+    </div>
+    <div id="gate-socio" style="display:none">
+      <div class="sb-label">PIN del equipo</div>
+      <input id="gate-pin" type="password" class="sb-input" placeholder="PIN" onkeydown="if(event.key==='Enter')gateSocio()">
+      <button class="btn btn-primary" onclick="gateSocio()"><i class="ti ti-login"></i>Entrar</button>
+      <button class="btn btn-ghost mt-8" onclick="gateShow('choose')">Volver</button>
+      <div id="gate-socio-msg" style="font-size:12px;color:#e25555;margin-top:8px"></div>
+    </div>
+    <div id="gate-vend" style="display:none">
+      <div style="display:flex;gap:6px;margin-bottom:12px">
+        <button class="btn btn-ghost" id="gv-tab-login" onclick="gateVendTab('login')" style="flex:1">Ya tengo codigo</button>
+        <button class="btn btn-ghost" id="gv-tab-new" onclick="gateVendTab('new')" style="flex:1">Soy nuevo</button>
+      </div>
+      <div id="gate-vend-login">
+        <div class="sb-label">Tu codigo</div>
+        <input id="gate-vcode" type="text" class="sb-input" placeholder="PL-XXXXX" onkeydown="if(event.key==='Enter')gateVendLogin()">
+        <button class="btn btn-primary" onclick="gateVendLogin()"><i class="ti ti-login"></i>Entrar</button>
+      </div>
+      <div id="gate-vend-new" style="display:none">
+        <div class="sb-label">Tu nombre</div>
+        <input id="gate-vname" type="text" class="sb-input" placeholder="Nombre y apellido">
+        <div class="sb-label">Telefono (opcional)</div>
+        <input id="gate-vtel" type="text" class="sb-input" placeholder="+58 ...">
+        <button class="btn btn-primary" onclick="gateVendRegister()"><i class="ti ti-user-plus"></i>Registrarme</button>
+      </div>
+      <button class="btn btn-ghost mt-8" onclick="gateShow('choose')">Volver</button>
+      <div id="gate-vend-msg" style="font-size:12px;margin-top:8px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- VEND BAR -->
+<div id="vend-bar" style="display:none;align-items:center;justify-content:space-between;gap:10px;padding:8px 14px;background:#15181d;border-bottom:1px solid #262a31">
+  <div style="font-size:12px;color:#c7ccd4"><i class="ti ti-user-dollar"></i> Vendedor: <b id="vend-bar-name"></b></div>
+  <button class="btn btn-ghost" style="width:auto;padding:5px 12px;margin:0" onclick="appLogout()">Salir</button>
+</div>
+
 <!-- NAV -->
 <div class="nav">
   <div class="nav-tab active" onclick="goPage('nueva')" id="tab-nueva"><i class="ti ti-plus"></i>Nueva</div>
@@ -493,6 +541,12 @@ html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;f
   <div class="card" style="margin-bottom:10px">
     <div style="font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px">Ranking de Operadores (30 dias)</div>
     <div id="dash-oper-rank"></div>
+  </div>
+
+  <!-- VENDEDOR RANKING -->
+  <div class="card" style="margin-bottom:10px">
+    <div style="font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px">Ventas por Vendedor (30 dias)</div>
+    <div id="dash-vend-rank"></div>
   </div>
 
   <!-- LOW STOCK ALERTS -->
@@ -704,6 +758,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;f
 <!-- PAGE: AJUSTES -->
 <div class="page" id="page-ajustes">
   <div class="ph"><h2>Configuracion</h2><p>Base de datos y productos</p><div class="ph-line"></div></div>
+  <div class="setting-group"><div class="setting-title"><i class="ti ti-logout" style="font-size:14px"></i>Sesion</div><button class="btn btn-ghost" onclick="appLogout()"><i class="ti ti-logout"></i>Cerrar sesion / cambiar de usuario</button></div>
 
   <div class="setting-group">
     <div class="setting-title"><i class="ti ti-database" style="font-size:14px"></i>Conexion Supabase</div>
@@ -889,6 +944,8 @@ var DEFAULT_CATALOG = [
 ];
 var DEFAULT_INV = {klow:2,tb10:18,tirz20:30,tirz10:30,nad:8,tesa10:6,selank:10,semax:10,mots:9,bpc10:54,glow:10,reta10:39,ipamorelin:10,ghk100:7,ghk50:8,cjc:20,pt141:10,reta20:20};
 var DEFAULT_OPERS = ['Wendy','David','Ricardo','Carlos'];
+var SOCIO_PIN = 'pl2580';
+var APP_ROLE=null, APP_VEND=null;
 var DEFAULT_CAJA = {zelle:0,binance:0,zinli:0,cash:0};
 
 // ═══════════════════════════════ STATE ═══════════════════════════════
@@ -1118,7 +1175,85 @@ function renderVendSelect(){
 }
 function selectVendedor(codigo){ S.currentVendedor=codigo||null; }
 
+// ACCESO (candado socios/vendedores)
+function gateShow(which){
+  document.getElementById('gate-choose').style.display = which==='choose'?'block':'none';
+  document.getElementById('gate-socio').style.display = which==='socio'?'block':'none';
+  document.getElementById('gate-vend').style.display = which==='vend'?'block':'none';
+  if(which==='vend') gateVendTab('login');
+}
+function gateVendTab(t){
+  document.getElementById('gate-vend-login').style.display = t==='login'?'block':'none';
+  document.getElementById('gate-vend-new').style.display = t==='new'?'block':'none';
+}
+function gateSocio(){
+  var v=(document.getElementById('gate-pin').value||'').trim();
+  if(v===SOCIO_PIN){ document.getElementById('gate-pin').value=''; setRole('socio',null,null); }
+  else { document.getElementById('gate-socio-msg').textContent='PIN incorrecto.'; }
+}
+function gateVendLogin(){
+  var code=(document.getElementById('gate-vcode').value||'').trim().toUpperCase();
+  var msg=document.getElementById('gate-vend-msg'); msg.style.color='#e25555';
+  if(!code){ msg.textContent='Escribe tu codigo.'; return; }
+  var v=null; S.vendedores.forEach(function(x){ if(x.codigo===code) v=x; });
+  function ok(vv){ if(vv.active===false){ msg.textContent='Tu acceso esta desactivado.'; return; } setRole('vendedor', vv.codigo, vv.nombre); }
+  if(v){ ok(v); return; }
+  if(sbClient){
+    msg.style.color='#8a8f98'; msg.textContent='Verificando...';
+    sbClient.from('vendedores').select('*').eq('codigo',code).limit(1).then(function(r){
+      var row=(r.data||[])[0];
+      if(!row){ msg.style.color='#e25555'; msg.textContent='Codigo no encontrado.'; return; }
+      var vv={codigo:row.codigo,nombre:row.nombre,telefono:row.telefono||'',active:row.active!==false};
+      var ex=false; S.vendedores.forEach(function(x){ if(x.codigo===vv.codigo) ex=true; });
+      if(!ex){ S.vendedores.push(vv); saveLocal(); }
+      ok(vv);
+    });
+  } else { msg.textContent='Codigo no encontrado.'; }
+}
+function gateVendRegister(){
+  var nombre=(document.getElementById('gate-vname').value||'').trim();
+  var tel=(document.getElementById('gate-vtel').value||'').trim();
+  var msg=document.getElementById('gate-vend-msg');
+  if(!nombre){ msg.style.color='#e25555'; msg.textContent='Escribe tu nombre.'; return; }
+  var codigo=genVendCode(), seen={}, g=0;
+  S.vendedores.forEach(function(v){ seen[v.codigo]=1; });
+  while(seen[codigo] && g<12){ codigo=genVendCode(); g++; }
+  var v={codigo:codigo, nombre:nombre, telefono:tel, active:true};
+  S.vendedores.push(v); saveLocal();
+  if(sbClient){ sbRun(sbClient.from('vendedores').upsert({codigo:v.codigo,nombre:v.nombre,telefono:v.telefono,active:true},{onConflict:'codigo'})); }
+  msg.style.color='#2cc77c'; msg.textContent='Tu codigo es '+codigo+'. Guardalo. Entrando...';
+  setTimeout(function(){ setRole('vendedor', v.codigo, v.nombre); }, 1500);
+}
+function setRole(role, codigo, nombre){
+  APP_ROLE=role; APP_VEND = role==='vendedor'?{codigo:codigo,nombre:nombre}:null;
+  try{ localStorage.setItem('pl_role', JSON.stringify({role:role,codigo:codigo,nombre:nombre})); }catch(e){}
+  applyRoleUI();
+}
+function appLogout(){ try{ localStorage.removeItem('pl_role'); }catch(e){} location.reload(); }
+function applyRoleUI(){
+  document.getElementById('access-gate').style.display='none';
+  var isVend = APP_ROLE==='vendedor';
+  var allow = isVend ? {nueva:1, catalogo:1} : null;
+  document.querySelectorAll('.nav .nav-tab').forEach(function(t){
+    var id=(t.id||'').replace('tab-','');
+    t.style.display = (!allow || allow[id]) ? '' : 'none';
+  });
+  var vb=document.getElementById('vend-bar');
+  if(vb){ vb.style.display = isVend?'flex':'none';
+    if(isVend){ document.getElementById('vend-bar-name').textContent = APP_VEND.nombre+' ('+APP_VEND.codigo+')'; } }
+  if(isVend){ S.currentOper=APP_VEND.nombre; S.currentVendedor=APP_VEND.codigo; goPage('nueva'); lockVendNueva(); }
+}
+function lockVendNueva(){
+  if(APP_ROLE!=='vendedor') return;
+  var os=document.querySelector('#page-nueva .oper-section'); if(os) os.style.display='none';
+  var vs=document.getElementById('vend-section'); if(vs) vs.style.display='none';
+  document.querySelectorAll('#page-nueva .op-card').forEach(function(c){ c.style.display=(c.id==='op-venta')?'':'none'; });
+  selectOpType('venta');
+  S.currentOper=APP_VEND.nombre; S.currentVendedor=APP_VEND.codigo;
+}
+
 function goPage(name){
+  if(APP_ROLE==='vendedor' && name!=='nueva' && name!=='catalogo') name='nueva';
   document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
   document.querySelectorAll('.nav-tab').forEach(function(t){ t.classList.remove('active'); });
   document.getElementById('page-'+name).classList.add('active');
@@ -1132,6 +1267,7 @@ function goPage(name){
   if(name==='ajustes')    renderAjustes();
   if(name==='vendedores') renderVendedores();
   if(name==='nueva')      renderVendSelect();
+  if(APP_ROLE==='vendedor' && name==='nueva') lockVendNueva();
 }
 
 // ═══════════════════════════════ OPERATORS ═══════════════════════════════
@@ -1967,6 +2103,29 @@ function renderDashboard(){
     }
   }
 
+  // VENDEDOR RANKING
+  var vendMap={};
+  S.history.forEach(function(h){
+    if(h.type!=='venta' || !h.vendedor || h.anulada) return;
+    var d=new Date(h.id); if(d<days30) return;
+    if(!vendMap[h.vendedor]) vendMap[h.vendedor]={total:0,count:0};
+    vendMap[h.vendedor].total+=parseFloat(h.total||0); vendMap[h.vendedor].count++;
+  });
+  function vendName(code){ var n=code; S.vendedores.forEach(function(v){ if(v.codigo===code) n=v.nombre+' ('+code+')'; }); return n; }
+  var vendSorted=Object.entries(vendMap).sort(function(a,b){ return b[1].total-a[1].total; });
+  var vrEl=document.getElementById('dash-vend-rank');
+  if(vrEl){
+    if(!vendSorted.length){ vrEl.innerHTML='<div style="font-size:12px;color:var(--text3);text-align:center;padding:10px">Sin ventas de vendedores aun</div>'; }
+    else { var vmax=vendSorted[0][1].total||1;
+      vrEl.innerHTML=vendSorted.map(function(o,i){ var pct=Math.round(o[1].total/vmax*100);
+        return '<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:4px">'
+          +'<span style="font-size:12px;color:var(--text);font-weight:500">#'+(i+1)+' '+esc(vendName(o[0]))+'</span>'
+          +'<span style="font-size:11px;color:var(--text2)">'+o[1].count+' ventas &middot; <span style="color:var(--gold-light);font-weight:600;font-size:13px">$'+o[1].total.toFixed(0)+'</span></span>'
+          +'</div><div style="background:var(--bg4);border-radius:3px;height:3px;overflow:hidden"><div style="height:100%;border-radius:3px;background:var(--gold-light,#E8B84B);width:'+pct+'%"></div></div></div>';
+      }).join('');
+    }
+  }
+
   // ── LOW STOCK ALERTS ──
   var alertEl=document.getElementById('dash-alerts');
   if(alertEl){
@@ -2204,6 +2363,12 @@ if(initSB(url,key)){
   startRealtime();
   syncDown();
 }
+
+(function initAccess(){
+  var saved=null; try{ saved=JSON.parse(localStorage.getItem('pl_role')||'null'); }catch(e){}
+  if(saved && saved.role){ APP_ROLE=saved.role; APP_VEND = saved.role==='vendedor'?{codigo:saved.codigo,nombre:saved.nombre}:null; applyRoleUI(); }
+  else { gateShow('choose'); document.getElementById('access-gate').style.display='flex'; }
+})();
 
 if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').catch(function(){}); }
 </script>
