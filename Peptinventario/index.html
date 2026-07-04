@@ -762,6 +762,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;f
     <div class="card" style="flex:1;text-align:center"><div style="font-size:22px;font-weight:700;color:#2ECC71" id="mv-aprob">0</div><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px">Aprobadas</div></div>
     <div class="card" style="flex:1;text-align:center"><div style="font-size:22px;font-weight:700;color:#F39C12" id="mv-pend">0</div><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px">Pendientes</div></div>
   </div>
+  <div class="card" style="margin-bottom:12px;text-align:center"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Comision estimada (<span id="mv-rate">25</span>% de aprobadas)</div><div style="font-size:24px;font-weight:700;color:#2ECC71" id="mv-com">$0</div></div>
   <div id="misventas-list"></div>
 </div>
 
@@ -1045,7 +1046,7 @@ function syncDown(){
       S.operators = r6.data.map(function(row){ return row.name; });
     }
     if(!r7.error && r7.data){
-      S.vendedores = r7.data.map(function(row){ return {codigo:row.codigo,nombre:row.nombre,telefono:row.telefono||'',active:row.active!==false}; });
+      S.vendedores = r7.data.map(function(row){ return {codigo:row.codigo,nombre:row.nombre,telefono:row.telefono||'',active:row.active!==false,comision:(row.comision!=null?Number(row.comision):25)}; });
     }
     saveLocal(); updateAll();
   }).catch(function(e){ console.warn('syncDown error',e); });
@@ -1157,8 +1158,18 @@ function toggleVendedor(codigo){
 }
 function vendStats(codigo){
   var n=0,t=0;
-  S.history.forEach(function(o){ if(o.vendedor===codigo && o.type==='venta' && !o.anulada){ n++; t+=(o.total||0); } });
+  S.history.forEach(function(o){ if(o.vendedor===codigo && o.type==='venta' && !o.anulada && !o.pendiente){ n++; t+=(o.total||0); } });
   return {n:n,t:t};
+}
+function comRate(v){ return (v && v.comision!=null && !isNaN(v.comision)) ? Number(v.comision) : 25; }
+function setComision(codigo, rate){
+  var v=null; S.vendedores.forEach(function(x){ if(x.codigo===codigo) v=x; }); if(!v) return;
+  v.comision=rate; saveLocal(); renderVendedores(); try{ renderDashboard(); }catch(e){}
+  if(sbClient && S.online){
+    sbClient.from('vendedores').update({comision:rate}).eq('codigo',codigo).then(function(r){
+      if(r.error){ showToast('No se pudo guardar: '+r.error.message); } else { showToast('Comision actualizada a '+rate+'%'); }
+    });
+  }
 }
 function renderVendedores(){
   var el=document.getElementById('vend-list'); if(!el) return;
@@ -1166,13 +1177,21 @@ function renderVendedores(){
   el.innerHTML=S.vendedores.map(function(v){
     var s=vendStats(v.codigo);
     var act=v.active!==false;
+    var rate=comRate(v);
+    var com=s.t*rate/100;
+    var top=rate>=30;
     var estado=act?'<span style="color:#2cc77c">activo</span>':'<span style="color:var(--text3)">inactivo</span>';
-    return '<div class="card" style="margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:10px">'+
-      '<div><div style="font-weight:600">'+esc(v.nombre)+'</div>'+
-      '<div style="font-size:12px;color:var(--text3)">Codigo: <b style="letter-spacing:1px">'+esc(v.codigo)+'</b> &middot; '+estado+'</div>'+
-      '<div style="font-size:12px;color:var(--text3)">'+s.n+' ventas &middot; $'+s.t.toFixed(2)+'</div></div>'+
-      '<button class="btn btn-ghost" style="width:auto;padding:6px 12px;margin:0;flex:none" onclick="toggleVendedor(\''+esc(v.codigo)+'\')">'+(act?'Desactivar':'Activar')+'</button>'+
-      '</div>';
+    return '<div class="card" style="margin-bottom:8px">'+
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">'+
+        '<div style="min-width:0"><div style="font-weight:600">'+esc(v.nombre)+(top?' <span style="color:#E8B84B">&#9733;</span>':'')+'</div>'+
+        '<div style="font-size:12px;color:var(--text3)">Codigo: <b style="letter-spacing:1px">'+esc(v.codigo)+'</b> &middot; '+estado+'</div>'+
+        '<div style="font-size:12px;color:var(--text3)">'+s.n+' ventas aprobadas &middot; $'+s.t.toFixed(2)+'</div>'+
+        '<div style="font-size:12px;color:var(--gold-light);font-weight:600">Comision '+rate+'% = $'+com.toFixed(2)+'</div></div>'+
+        '<div style="display:flex;flex-direction:column;gap:6px;flex:none">'+
+          '<button class="btn btn-ghost" style="width:auto;padding:5px 10px;margin:0;font-size:11px" onclick="setComision(\''+esc(v.codigo)+'\','+(top?25:30)+')">'+(top?'Bajar a 25%':'Subir a 30%')+'</button>'+
+          '<button class="btn btn-ghost" style="width:auto;padding:5px 10px;margin:0;font-size:11px" onclick="toggleVendedor(\''+esc(v.codigo)+'\')">'+(act?'Desactivar':'Activar')+'</button>'+
+        '</div>'+
+      '</div></div>';
   }).join('');
 }
 function renderVendSelect(){
@@ -1312,6 +1331,11 @@ function renderMisVentas(){
   var c=document.getElementById('mv-count'); if(c) c.textContent=mine.length;
   var a=document.getElementById('mv-aprob'); if(a) a.textContent=aprob;
   var pp=document.getElementById('mv-pend'); if(pp) pp.textContent=pn;
+  var aprobTotal=mine.filter(function(o){return !o.pendiente;}).reduce(function(sm,o){return sm+(parseFloat(o.total)||0);},0);
+  var myv=null; S.vendedores.forEach(function(x){ if(x.codigo===code) myv=x; });
+  var mrate=comRate(myv);
+  var mr=document.getElementById('mv-rate'); if(mr) mr.textContent=mrate;
+  var mc=document.getElementById('mv-com'); if(mc) mc.textContent='$'+(aprobTotal*mrate/100).toFixed(2);
   if(!mine.length){ el.innerHTML='<div style="font-size:13px;color:var(--text3);text-align:center;padding:24px">Aun no has registrado ventas.</div>'; return; }
   el.innerHTML=mine.map(function(o){
     var items=(o.items||[]).map(function(i){ return esc(i.name)+' x'+i.qty; }).join(', ');
@@ -2192,10 +2216,12 @@ function renderDashboard(){
     if(!vendSorted.length){ vrEl.innerHTML='<div style="font-size:12px;color:var(--text3);text-align:center;padding:10px">Sin ventas de vendedores aun</div>'; }
     else { var vmax=vendSorted[0][1].total||1;
       vrEl.innerHTML=vendSorted.map(function(o,i){ var pct=Math.round(o[1].total/vmax*100);
+        var vr=25; S.vendedores.forEach(function(v){ if(v.codigo===o[0]) vr=comRate(v); }); var com=o[1].total*vr/100;
         return '<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:4px">'
-          +'<span style="font-size:12px;color:var(--text);font-weight:500">#'+(i+1)+' '+esc(vendName(o[0]))+'</span>'
+          +'<span style="font-size:12px;color:var(--text);font-weight:500">#'+(i+1)+' '+esc(vendName(o[0]))+(vr>=30?' <span style="color:#E8B84B">&#9733;</span>':'')+'</span>'
           +'<span style="font-size:11px;color:var(--text2)">'+o[1].count+' ventas &middot; <span style="color:var(--gold-light);font-weight:600;font-size:13px">$'+o[1].total.toFixed(0)+'</span></span>'
-          +'</div><div style="background:var(--bg4);border-radius:3px;height:3px;overflow:hidden"><div style="height:100%;border-radius:3px;background:var(--gold-light,#E8B84B);width:'+pct+'%"></div></div></div>';
+          +'</div><div style="font-size:11px;color:#2ECC71;margin-bottom:4px">Comision '+vr+'%: $'+com.toFixed(0)+'</div>'
+          +'<div style="background:var(--bg4);border-radius:3px;height:3px;overflow:hidden"><div style="height:100%;border-radius:3px;background:var(--gold-light,#E8B84B);width:'+pct+'%"></div></div></div>';
       }).join('');
     }
   }
