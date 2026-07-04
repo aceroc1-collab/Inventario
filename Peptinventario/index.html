@@ -1017,7 +1017,7 @@ function syncDown(){
   var p2 = sbClient.from('operations').select('*').order('created_at',{ascending:false}).limit(300);
   var p3 = sbClient.from('caja').select('method,balance');
   var p4 = sbClient.from('caja_transfers').select('*').order('created_at',{ascending:false}).limit(100);
-  var p5 = sbClient.from('catalog').select('*').order('sort_order',{ascending:true});
+  var p5 = sbClient.from('catalog').select('*').eq('active',true).order('sort_order',{ascending:true});
   var p6 = sbClient.from('operators').select('name').eq('active',true);
   var p7 = sbClient.from('vendedores').select('*');
   return Promise.all([p1,p2,p3,p4,p5,p6,p7]).then(function(results){
