@@ -1811,11 +1811,12 @@ function renderCatalog(){
       +groups[name].map(function(p){
         var hasCost=p.cost&&p.cost>0;
         var margin=hasCost&&p.price>0?Math.round(p.price/p.cost*100):null;
+        var socio=(typeof APP_ROLE==='undefined'||APP_ROLE!=='vendedor');
         return '<div class="cat-row">'
           +'<span class="cat-dose">'+p.dose+'</span>'
           +'<div style="display:flex;align-items:center;gap:10px">'
-          +(hasCost?'<span style="font-size:10px;color:var(--text3)">Costo: $'+p.cost+'</span>':'')
-          +(margin!==null?'<span style="font-size:10px;background:rgba(46,204,113,0.12);color:#2ECC71;padding:2px 7px;border-radius:10px;font-weight:600">'+margin+'%</span>':'')
+          +(socio&&hasCost?'<span style="font-size:10px;color:var(--text3)">Costo: $'+p.cost+'</span>':'')
+          +(socio&&margin!==null?'<span style="font-size:10px;background:rgba(46,204,113,0.12);color:#2ECC71;padding:2px 7px;border-radius:10px;font-weight:600">'+margin+'%</span>':'')
           +'<span class="cat-price">$'+p.price+' USD</span>'
           +'</div>'
           +'</div>';
