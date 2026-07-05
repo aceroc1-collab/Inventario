@@ -1810,7 +1810,7 @@ function renderCatalog(){
     return '<div class="cat-group"><div class="cat-group-name">'+name+'</div>'
       +groups[name].map(function(p){
         var hasCost=p.cost&&p.cost>0;
-        var margin=hasCost&&p.price>0?Math.round((p.price-p.cost)/p.price*100):null;
+        var margin=hasCost&&p.price>0?Math.round(p.price/p.cost*100):null;
         return '<div class="cat-row">'
           +'<span class="cat-dose">'+p.dose+'</span>'
           +'<div style="display:flex;align-items:center;gap:10px">'
@@ -1896,7 +1896,7 @@ function renderAjustes(){
   if(el){
     el.innerHTML=S.catalog.map(function(p,i){
       var hasCost = p.cost && p.cost > 0;
-      var margin  = hasCost && p.price > 0 ? Math.round((p.price-p.cost)/p.price*100) : null;
+      var margin  = hasCost && p.price > 0 ? Math.round(p.price/p.cost*100) : null;
       return '<div class="prod-item">'
         +'<div class="pmi-info">'
         +'<div class="pmi-name">'+p.name+'</div>'
