@@ -41,3 +41,10 @@ INSERT INTO inventory (product_id, stock) VALUES
   ('ipamorelin',10),('ghk100',7),('ghk50',8),('cjc',20),
   ('pt141',10),('reta20',20)
 ON CONFLICT (product_id) DO UPDATE SET stock = EXCLUDED.stock;
+
+-- FIX (2026-08-17): operations_type_check no incluia 'gasto' ni 'capital',
+-- por lo que esos registros nunca llegaban a Supabase (fallaban en silencio).
+-- Ejecutar una sola vez en el SQL Editor de Supabase.
+ALTER TABLE operations DROP CONSTRAINT IF EXISTS operations_type_check;
+ALTER TABLE operations ADD CONSTRAINT operations_type_check
+  CHECK (type IN ('venta','compra','devolucion','perdida','gasto','capital'));

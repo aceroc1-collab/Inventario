@@ -204,6 +204,8 @@ html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;f
 .caja-card.binance::before{background:linear-gradient(90deg,#F0B90B,#E89B0C)}
 .caja-card.zinli::before{background:linear-gradient(90deg,#00C9A7,#0099CC)}
 .caja-card.cash::before{background:linear-gradient(90deg,#2ECC71,#1D7A4A)}
+.caja-card.porcobrar{border-style:dashed;border-color:rgba(243,156,18,0.4)}
+.caja-card.porcobrar::before{background:linear-gradient(90deg,#F39C12,#C8781A)}
 .caja-icon{font-size:20px;margin-bottom:6px;display:block}
 .caja-name{font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
 .caja-amount{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:500;line-height:1}
@@ -427,6 +429,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;f
         <div class="pay-chip" onclick="selPay('binance')" id="pay-binance"><i class="ti ti-currency-bitcoin"></i>Binance</div>
         <div class="pay-chip" onclick="selPay('zinli')" id="pay-zinli"><i class="ti ti-device-mobile"></i>Zinli</div>
         <div class="pay-chip" onclick="selPay('cash')" id="pay-cash"><i class="ti ti-cash"></i>Cash</div>
+        <div class="pay-chip" onclick="selPay('porcobrar')" id="pay-porcobrar" style="display:none"><i class="ti ti-clock-dollar"></i>Por Cobrar</div>
       </div>
     </div>
 
@@ -437,6 +440,14 @@ html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;f
         <input type="text" id="simple-op-concept" class="sb-input" placeholder="Ej: Envio DHL, Material empaque...">
         <div class="sb-label">Monto USD</div>
         <input type="number" id="simple-op-amount" class="sb-input" placeholder="0.00" min="0" step="0.01" style="margin-bottom:0">
+      </div>
+    </div>
+
+    <!-- CLIENTE (solo Venta) -->
+    <div id="venta-cliente-form" style="display:none">
+      <div style="background:var(--bg3);border:1px solid var(--border-mid);border-radius:var(--radius);padding:14px;margin-bottom:14px">
+        <div class="sb-label">Nombre del cliente</div>
+        <input type="text" id="venta-cliente" class="sb-input" placeholder="Quien compra..." style="margin-bottom:0">
       </div>
     </div>
 
@@ -569,12 +580,20 @@ html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;f
     <button class="filter-chip" onclick="fHist('compra',this)">Compras</button>
     <button class="filter-chip" onclick="fHist('devolucion',this)">Devoluciones</button>
     <button class="filter-chip" onclick="fHist('perdida',this)">Perdidas</button>
+    <button class="filter-chip" onclick="fHist('porcobrar',this)">Por Cobrar</button>
     <button class="filter-chip" onclick="fHist('oper',this)">Por Operador</button>
   </div>
   <div id="hist-oper-filter" style="display:none;margin-bottom:12px">
     <select class="sb-select" id="hist-oper-select" onchange="renderHist()">
       <option value="">Todos los operadores</option>
     </select>
+  </div>
+  <div id="hist-porcobrar-tools" style="display:none;margin-bottom:12px">
+    <input type="text" id="hist-cliente-search" class="sb-input" placeholder="Buscar por nombre de cliente..." oninput="renderHist()" style="margin-bottom:10px">
+    <div style="background:rgba(243,156,18,0.08);border:1px solid rgba(243,156,18,0.3);border-radius:var(--radius-sm);padding:10px 14px;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:11px;color:var(--text2)">Total pendiente de cobro</span>
+      <span style="font-family:'Cormorant Garamond',serif;font-size:18px;color:#F39C12;font-weight:600" id="hist-porcobrar-summary">$0.00 en 0 ventas</span>
+    </div>
   </div>
   <div id="hist-list"></div>
 </div>
@@ -591,9 +610,17 @@ html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;f
 
   <div class="caja-grid" id="caja-balances"></div>
 
-  <div style="background:linear-gradient(135deg,rgba(200,146,42,0.08),rgba(200,146,42,0.02));border:1px solid var(--border-gold-bright);border-radius:var(--radius);padding:14px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center">
+  <div style="background:linear-gradient(135deg,rgba(200,146,42,0.08),rgba(200,146,42,0.02));border:1px solid var(--border-gold-bright);border-radius:var(--radius);padding:14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">
     <span style="font-size:12px;color:var(--text2)">Total disponible</span>
     <span style="font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--gold-light);font-weight:600" id="caja-total">$0.00</span>
+  </div>
+
+  <div id="caja-porcobrar-wrap" style="background:rgba(243,156,18,0.06);border:1px solid rgba(243,156,18,0.3);border-radius:var(--radius);padding:14px;margin-bottom:14px">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:12px;color:var(--text2);display:flex;align-items:center;gap:6px"><i class="ti ti-clock-dollar" style="color:#F39C12"></i>Total por cobrar</span>
+      <span style="font-family:'Cormorant Garamond',serif;font-size:22px;color:#F39C12;font-weight:600" id="caja-porcobrar-total">$0.00</span>
+    </div>
+    <div style="font-size:10px;color:var(--text3);margin-top:4px">Ventas pendientes de pago — no incluido en el Total disponible</div>
   </div>
 
   <!-- TRANSFERIR -->
@@ -894,6 +921,31 @@ html,body{background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;f
   </div>
 </div>
 
+<!-- MARCAR COMO COBRADO MODAL -->
+<div class="overlay" id="cobrar-overlay">
+  <div class="sheet" style="padding-bottom:24px" onclick="event.stopPropagation()">
+    <div class="sheet-handle"></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <div style="width:40px;height:40px;border-radius:50%;background:rgba(46,204,113,0.12);border:1px solid #2ECC71;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <i class="ti ti-cash-banknote" style="font-size:20px;color:#2ECC71"></i>
+      </div>
+      <div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--text)">Marcar como Cobrado</div>
+        <div style="font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase">Elige donde entro el dinero</div>
+      </div>
+    </div>
+    <div id="cobrar-body" style="background:var(--bg4);border:1px solid var(--border-mid);border-radius:var(--radius-sm);padding:12px;margin-bottom:16px;font-size:12px;color:var(--text2);line-height:1.8"></div>
+    <div class="pay-grid" id="cobrar-pay-grid" style="margin-bottom:16px">
+      <div class="pay-chip" onclick="cobrarSelMetodo('zelle')" id="cobrar-pay-zelle"><i class="ti ti-brand-paypal"></i>Zelle</div>
+      <div class="pay-chip" onclick="cobrarSelMetodo('binance')" id="cobrar-pay-binance"><i class="ti ti-currency-bitcoin"></i>Binance</div>
+      <div class="pay-chip" onclick="cobrarSelMetodo('zinli')" id="cobrar-pay-zinli"><i class="ti ti-device-mobile"></i>Zinli</div>
+      <div class="pay-chip" onclick="cobrarSelMetodo('cash')" id="cobrar-pay-cash"><i class="ti ti-cash"></i>Cash</div>
+    </div>
+    <button class="btn btn-primary" onclick="cobrarConfirm()"><i class="ti ti-check"></i>Confirmar Cobro</button>
+    <button class="btn btn-ghost" onclick="cobrarCancel()"><i class="ti ti-x"></i>Cancelar</button>
+  </div>
+</div>
+
 <!-- STOCK WARNING MODAL -->
 <div class="overlay" id="stock-warn-overlay">
   <div class="sheet" style="padding-bottom:24px" onclick="event.stopPropagation()">
@@ -928,9 +980,10 @@ var SB_URL = 'https://glclhnubybczhqjbsapt.supabase.co';
 var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdsY2xobnVieWJjemhxamJzYXB0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwNjM4MDksImV4cCI6MjA5NTYzOTgwOX0.AY1AObbSTldVOZTgacGCnjSpsOvL2YCJn0R7TXAkcic';
 
 var PAY_METHODS = ['zelle','binance','zinli','cash'];
-var PAY_LABELS  = {zelle:'Zelle',binance:'Binance',zinli:'Zinli',cash:'Cash'};
-var PAY_ICONS   = {zelle:'ti-brand-paypal',binance:'ti-currency-bitcoin',zinli:'ti-device-mobile',cash:'ti-cash'};
-var PAY_COLORS  = {zelle:'#6C63FF',binance:'#F0B90B',zinli:'#00C9A7',cash:'#2ECC71'};
+var PAY_LABELS  = {zelle:'Zelle',binance:'Binance',zinli:'Zinli',cash:'Cash',porcobrar:'Por Cobrar'};
+var PAY_ICONS   = {zelle:'ti-brand-paypal',binance:'ti-currency-bitcoin',zinli:'ti-device-mobile',cash:'ti-cash',porcobrar:'ti-clock-dollar'};
+var PAY_COLORS  = {zelle:'#6C63FF',binance:'#F0B90B',zinli:'#00C9A7',cash:'#2ECC71',porcobrar:'#F39C12'};
+var CAJA_METHODS = PAY_METHODS.concat(['porcobrar']);
 
 var DEFAULT_CATALOG = [
   {id:'klow',name:'KLOW Blend',dose:'-',price:220,cost:0},
@@ -956,26 +1009,26 @@ var DEFAULT_INV = {klow:2,tb10:18,tirz20:30,tirz10:30,nad:8,tesa10:6,selank:10,s
 var DEFAULT_OPERS = ['Wendy','David','Ricardo','Carlos'];
 var SOCIO_PIN = 'pl2580';
 var APP_ROLE=null, APP_VEND=null;
-var DEFAULT_CAJA = {zelle:0,binance:0,zinli:0,cash:0};
+var DEFAULT_CAJA = {zelle:0,binance:0,zinli:0,cash:0,porcobrar:0};
 
 // ═══════════════════════════════ STATE ═══════════════════════════════
 var sbClient = null;
 var S = {
   catalog:[], operators:[], vendedores:[], inventory:{}, history:[],
-  caja:{zelle:0,binance:0,zinli:0,cash:0},
-  xferHistory:[],
-  currentOp:null, currentOper:null, currentVendedor:null, currentPayment:null,
+  caja:{zelle:0,binance:0,zinli:0,cash:0,porcobrar:0},
+  xferHistory:[], pendingOps:[],
+  currentOp:null, currentOper:null, currentVendedor:null, currentPayment:null, currentCliente:'',
   cart:[], modalSel:[], online:navigator.onLine
 };
 var invFilter='all', histFilter='all';
 
-window.addEventListener('online',  function(){ S.online=true;  updateDot(); syncDown(); showToast('Conectado - sincronizando...'); });
+window.addEventListener('online',  function(){ S.online=true;  updateDot(); syncDown().then(flushPendingOps); showToast('Conectado - sincronizando...'); });
 window.addEventListener('offline', function(){ S.online=false; updateDot(); showToast('Modo offline'); });
 
 // ═══════════════════════════════ LOCAL STORAGE ═══════════════════════════════
 var LS_KEY = 'pl4';
 function saveLocal(){
-  try{ localStorage.setItem(LS_KEY, JSON.stringify({catalog:S.catalog,operators:S.operators,vendedores:S.vendedores,inventory:S.inventory,history:S.history,caja:S.caja,xferHistory:S.xferHistory})); }catch(e){}
+  try{ localStorage.setItem(LS_KEY, JSON.stringify({catalog:S.catalog,operators:S.operators,vendedores:S.vendedores,inventory:S.inventory,history:S.history,caja:S.caja,xferHistory:S.xferHistory,pendingOps:S.pendingOps})); }catch(e){}
 }
 function loadLocal(){
   try{
@@ -989,17 +1042,19 @@ function loadLocal(){
       S.history      = d.history      || [];
       S.caja         = d.caja         || Object.assign({},DEFAULT_CAJA);
       S.xferHistory  = d.xferHistory  || [];
+      S.pendingOps   = d.pendingOps   || [];
     } else {
       S.catalog=DEFAULT_CATALOG.slice(); S.operators=DEFAULT_OPERS.slice();
       S.inventory=Object.assign({},DEFAULT_INV); S.history=[];
-      S.caja=Object.assign({},DEFAULT_CAJA); S.xferHistory=[];
+      S.caja=Object.assign({},DEFAULT_CAJA); S.xferHistory=[]; S.pendingOps=[];
     }
   }catch(e){
     S.catalog=DEFAULT_CATALOG.slice(); S.operators=DEFAULT_OPERS.slice();
     S.inventory=Object.assign({},DEFAULT_INV); S.history=[];
-    S.caja=Object.assign({},DEFAULT_CAJA); S.xferHistory=[];
+    S.caja=Object.assign({},DEFAULT_CAJA); S.xferHistory=[]; S.pendingOps=[];
   }
   S.catalog.forEach(function(p){ if(S.inventory[p.id]===undefined) S.inventory[p.id]=0; });
+  CAJA_METHODS.forEach(function(m){ if(S.caja[m]===undefined) S.caja[m]=0; });
 }
 
 // ═══════════════════════════════ SUPABASE ═══════════════════════════════
@@ -1025,12 +1080,16 @@ function syncDown(){
     if(!r1.error && r1.data) r1.data.forEach(function(row){ S.inventory[row.product_id]=row.stock; });
     if(!r2.error && r2.data){
       S.history = r2.data.map(function(row){
-        var anulada = row.items && row.items.length && row.items[0].__anulada===true;
-        var pendiente = row.items && row.items.length && row.items[0].__pendiente===true;
+        var meta = row.items && row.items.length ? row.items[0] : {};
+        var anulada = meta.__anulada===true;
+        var pendiente = meta.__pendiente===true;
         return {id:row.id,type:row.type,operator:row.operator,vendedor:row.vendedor||null,payment:row.payment||null,
           date:new Date(row.created_at).toLocaleString('es-MX',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}),
-          items:row.items,total:row.total,anulada:anulada,pendiente:pendiente};
+          items:row.items,total:row.total,anulada:anulada,pendiente:pendiente,
+          cliente:meta.__cliente||'',cobrado:meta.__cobrado===true,cobradoMetodo:meta.__cobradoMetodo||null};
       });
+      var syncedIds={}; r2.data.forEach(function(row){ syncedIds[row.id]=true; });
+      S.pendingOps = (S.pendingOps||[]).filter(function(id){ return !syncedIds[id]; });
     }
     if(!r3.error && r3.data) r3.data.forEach(function(row){ S.caja[row.method]=parseFloat(row.balance)||0; });
     if(!r4.error && r4.data){
@@ -1049,33 +1108,55 @@ function syncDown(){
       S.vendedores = r7.data.map(function(row){ return {codigo:row.codigo,nombre:row.nombre,telefono:row.telefono||'',active:row.active!==false,comision:(row.comision!=null?Number(row.comision):25)}; });
     }
     saveLocal(); updateAll();
+    flushPendingOps();
   }).catch(function(e){ console.warn('syncDown error',e); });
 }
 
 function syncUp(op){
   // Sync inventory
   var invRows = S.catalog.map(function(p){ return {product_id:p.id,stock:S.inventory[p.id]||0}; });
-  // Sync caja
-  var cajaRows = PAY_METHODS.map(function(m){ return {method:m,balance:S.caja[m]||0}; });
+  // Sync caja (incluye el bolsillo "porcobrar")
+  var cajaRows = CAJA_METHODS.map(function(m){ return {method:m,balance:S.caja[m]||0}; });
+  if(op && S.pendingOps.indexOf(op.id)<0) S.pendingOps.push(op.id);
   if(sbClient && S.online){
-    sbRun(sbClient.from('inventory').upsert(invRows,{onConflict:'product_id'}));
-    sbRun(sbClient.from('caja').upsert(cajaRows,{onConflict:'method'}));
-    if(op){
-      sbRun(sbClient.from('operations').upsert({
-        id:op.id, type:op.type, operator:op.operator, vendedor:op.vendedor||null, payment:op.payment||null,
-        items:op.items, total:op.total, created_at:new Date(op.id).toISOString()
-      },{onConflict:'id'}));
-    }
+    sbRun(sbClient.from('inventory').upsert(invRows,{onConflict:'product_id'}),'inventario');
+    sbRun(sbClient.from('caja').upsert(cajaRows,{onConflict:'method'}),'caja');
+    if(op) pushOp(op);
   }
   saveLocal();
   return Promise.resolve();
 }
 
+// Empuja una operacion puntual a Supabase y la saca de la cola de reintento si tiene exito
+function pushOp(op){
+  if(!sbClient || !S.online) return Promise.resolve();
+  return sbRun(sbClient.from('operations').upsert({
+    id:op.id, type:op.type, operator:op.operator, vendedor:op.vendedor||null, payment:op.payment||null,
+    items:op.items, total:op.total, created_at:new Date(op.id).toISOString()
+  },{onConflict:'id'}),'operacion').then(function(r){
+    if(r && !r.error){
+      var i=S.pendingOps.indexOf(op.id); if(i>=0) S.pendingOps.splice(i,1);
+      saveLocal();
+    }
+  });
+}
+
+// Reintenta operaciones que quedaron sin confirmar en Supabase (offline o error transitorio)
+function flushPendingOps(){
+  if(!sbClient || !S.online || !S.pendingOps || !S.pendingOps.length) return;
+  var ids=S.pendingOps.slice();
+  ids.forEach(function(id){
+    var op=null; S.history.forEach(function(h){ if(h.id===id) op=h; });
+    if(op){ pushOp(op); }
+    else { var i=S.pendingOps.indexOf(id); if(i>=0) S.pendingOps.splice(i,1); saveLocal(); }
+  });
+}
+
 function syncCajaUp(){
   saveLocal();
   if(!sbClient||!S.online) return Promise.resolve();
-  var rows = PAY_METHODS.map(function(m){ return {method:m,balance:S.caja[m]||0}; });
-  sbRun(sbClient.from('caja').upsert(rows,{onConflict:'method'}));
+  var rows = CAJA_METHODS.map(function(m){ return {method:m,balance:S.caja[m]||0}; });
+  sbRun(sbClient.from('caja').upsert(rows,{onConflict:'method'}),'caja');
   return Promise.resolve();
 }
 
@@ -1145,7 +1226,7 @@ function addVendedor(){
   while(seen[codigo] && g<12){ codigo=genVendCode(); g++; }
   var v={codigo:codigo, nombre:nombre, telefono:tel, active:true};
   S.vendedores.push(v); saveLocal();
-  if(sbClient && S.online){ sbRun(sbClient.from('vendedores').upsert({codigo:v.codigo,nombre:v.nombre,telefono:v.telefono,active:true},{onConflict:'codigo'})); }
+  if(sbClient && S.online){ sbRun(sbClient.from('vendedores').upsert({codigo:v.codigo,nombre:v.nombre,telefono:v.telefono,active:true},{onConflict:'codigo'}),'vendedor'); }
   document.getElementById('vend-nombre').value=''; document.getElementById('vend-tel').value='';
   msg.style.color='#2cc77c'; msg.textContent='Vendedor creado. Codigo: '+codigo;
   renderVendedores(); renderVendSelect();
@@ -1153,7 +1234,7 @@ function addVendedor(){
 function toggleVendedor(codigo){
   var v=null; S.vendedores.forEach(function(x){ if(x.codigo===codigo) v=x; }); if(!v) return;
   v.active = v.active===false; saveLocal();
-  if(sbClient && S.online){ sbRun(sbClient.from('vendedores').upsert({codigo:v.codigo,nombre:v.nombre,telefono:v.telefono||'',active:v.active},{onConflict:'codigo'})); }
+  if(sbClient && S.online){ sbRun(sbClient.from('vendedores').upsert({codigo:v.codigo,nombre:v.nombre,telefono:v.telefono||'',active:v.active},{onConflict:'codigo'}),'vendedor'); }
   renderVendedores(); renderVendSelect();
 }
 function vendStats(codigo){
@@ -1248,7 +1329,7 @@ function gateVendRegister(){
   while(seen[codigo] && g<12){ codigo=genVendCode(); g++; }
   var v={codigo:codigo, nombre:nombre, telefono:tel, active:true};
   S.vendedores.push(v); saveLocal();
-  if(sbClient){ sbRun(sbClient.from('vendedores').upsert({codigo:v.codigo,nombre:v.nombre,telefono:v.telefono,active:true},{onConflict:'codigo'})); }
+  if(sbClient){ sbRun(sbClient.from('vendedores').upsert({codigo:v.codigo,nombre:v.nombre,telefono:v.telefono,active:true},{onConflict:'codigo'}),'vendedor'); }
   msg.style.color='#2cc77c'; msg.textContent='Tu codigo es '+codigo+'. Guardalo. Entrando...';
   setTimeout(function(){ setRole('vendedor', v.codigo, v.nombre); }, 1500);
 }
@@ -1319,7 +1400,7 @@ function approveVenta(id){
 function rejectVenta(id){
   var idx=-1; S.history.forEach(function(o,i){ if(o.id===id) idx=i; }); if(idx<0) return;
   S.history.splice(idx,1); saveLocal();
-  if(sbClient&&S.online) sbRun(sbClient.from('operations').delete().eq('id',id));
+  if(sbClient&&S.online) sbRun(sbClient.from('operations').delete().eq('id',id),'rechazar venta');
   renderAprob(); showToast('Venta rechazada');
 }
 function renderMisVentas(){
@@ -1394,8 +1475,12 @@ function selectOpType(op){
   document.getElementById('pay-section').style.display = needsPay?'block':'none';
   document.getElementById('simple-op-form').style.display = isSimple?'block':'none';
   document.getElementById('products-op-form').style.display = isSimple?'none':'block';
+  document.getElementById('pay-porcobrar').style.display = op==='venta'?'':'none';
+  var clienteForm=document.getElementById('venta-cliente-form');
+  if(clienteForm) clienteForm.style.display = op==='venta'?'block':'none';
 
   if(!needsPay) S.currentPayment=null;
+  if(op!=='venta' && S.currentPayment==='porcobrar') S.currentPayment=null;
 
   if(op==='gasto'){
     document.getElementById('simple-op-concept-label').textContent='Concepto del gasto';
@@ -1412,7 +1497,7 @@ function selectOpType(op){
 // ═══════════════════════════════ PAYMENT ═══════════════════════════════
 function selPay(m){
   S.currentPayment=m;
-  PAY_METHODS.forEach(function(x){ var el=document.getElementById('pay-'+x); if(el) el.classList.toggle('active',x===m); });
+  CAJA_METHODS.forEach(function(x){ var el=document.getElementById('pay-'+x); if(el) el.classList.toggle('active',x===m); });
   updateTotals();
 }
 
@@ -1513,18 +1598,20 @@ function updateTotals(){
   el=document.getElementById('tot-amount'); if(el) el.textContent='$'+total.toFixed(2);
 }
 function clearForm(){
-  S.cart=[]; S.currentOp=null; S.currentPayment=null; S.currentVendedor=null; var _vs=document.getElementById('vend-select'); if(_vs) _vs.value='';
-  PAY_METHODS.forEach(function(m){ var el=document.getElementById('pay-'+m); if(el) el.classList.remove('active'); });
+  S.cart=[]; S.currentOp=null; S.currentPayment=null; S.currentVendedor=null; S.currentCliente=''; var _vs=document.getElementById('vend-select'); if(_vs) _vs.value='';
+  CAJA_METHODS.forEach(function(m){ var el=document.getElementById('pay-'+m); if(el) el.classList.remove('active'); });
   document.querySelectorAll('.op-card').forEach(function(c){ c.classList.remove('selected'); });
   document.getElementById('op-form').style.display='none';
   document.getElementById('pay-section').style.display='none';
   document.getElementById('simple-op-form').style.display='none';
+  document.getElementById('venta-cliente-form').style.display='none';
   document.getElementById('products-op-form').style.display='block';
   document.getElementById('cart-wrap').innerHTML='';
   document.getElementById('cart-empty').style.display='block';
   document.getElementById('total-wrap').style.display='none';
   var ca=document.getElementById('simple-op-concept'); if(ca) ca.value='';
   var am=document.getElementById('simple-op-amount');  if(am) am.value='';
+  var cl=document.getElementById('venta-cliente');     if(cl) cl.value='';
 }
 
 // ═══════════════════════════════ CONFIRM ═══════════════════════════════
@@ -1536,6 +1623,12 @@ function confirmOp(){
   var isSimple=S.currentOp==='gasto'||S.currentOp==='capital';
   var needsPay=S.currentOp==='venta'||S.currentOp==='compra'||S.currentOp==='devolucion'||isSimple;
   if(needsPay && !S.currentPayment){ showToast('Selecciona el metodo de pago'); return; }
+
+  if(S.currentOp==='venta'){
+    var clienteEl=document.getElementById('venta-cliente');
+    S.currentCliente = clienteEl ? clienteEl.value.trim() : '';
+    if(!S.currentCliente){ showToast('Escribe el nombre del cliente'); return; }
+  }
 
   if(isSimple){
     var amount=parseFloat(document.getElementById('simple-op-amount').value)||0;
@@ -1644,10 +1737,19 @@ function doConfirmOp(){
   }
 
   if(pend && opItems.length) opItems[0].__pendiente=true;
+  var esVenta = S.currentOp==='venta';
+  var esPorCobrar = esVenta && S.currentPayment==='porcobrar';
+  if(esVenta && opItems.length){
+    opItems[0].__cliente=S.currentCliente||'';
+    if(esPorCobrar) opItems[0].__cobrado=false;
+  }
   var op={
     id:Date.now(), type:S.currentOp, operator:S.currentOper, vendedor:S.currentVendedor||null, payment:S.currentPayment||null, pendiente:pend||false,
     date:new Date().toLocaleString('es-MX',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}),
-    items:opItems, total:total
+    items:opItems, total:total,
+    cliente: esVenta ? (S.currentCliente||'') : '',
+    cobrado: esPorCobrar ? false : undefined,
+    cobradoMetodo: null
   };
   S.history.unshift(op);
 
@@ -1702,6 +1804,8 @@ function fHist(f,btn){
   if(btn) btn.classList.add('active');
   var operFilter=document.getElementById('hist-oper-filter');
   if(operFilter) operFilter.style.display=f==='oper'?'block':'none';
+  var pcTools=document.getElementById('hist-porcobrar-tools');
+  if(pcTools) pcTools.style.display=f==='porcobrar'?'block':'none';
   renderHist();
 }
 function renderHist(){
@@ -1711,6 +1815,15 @@ function renderHist(){
     var sel=document.getElementById('hist-oper-select');
     var chosen=sel?sel.value:'';
     if(chosen) items=items.filter(function(h){ return h.operator===chosen; });
+  } else if(histFilter==='porcobrar'){
+    items=items.filter(function(h){ return h.type==='venta' && h.payment==='porcobrar'; });
+    var q=(document.getElementById('hist-cliente-search')||{}).value||'';
+    q=q.toLowerCase().trim();
+    if(q) items=items.filter(function(h){ return (h.cliente||'').toLowerCase().indexOf(q)>=0; });
+    var pend=items.filter(function(h){ return !h.cobrado && !h.anulada; });
+    var pendTotal=pend.reduce(function(s,h){ return s+parseFloat(h.total||0); },0);
+    var sumEl=document.getElementById('hist-porcobrar-summary');
+    if(sumEl) sumEl.textContent='$'+pendTotal.toFixed(2)+' en '+pend.length+' venta'+(pend.length===1?'':'s');
   } else if(histFilter!=='all'){
     items=items.filter(function(h){ return h.type===histFilter; });
   }
@@ -1721,15 +1834,27 @@ function renderHist(){
     var payIcon=h.payment?'<i class="ti '+PAY_ICONS[h.payment]+'" style="vertical-align:-2px;margin-right:3px"></i>':'';
     var origIdx=S.history.indexOf(h);
     var isAnulada=h.anulada;
+    var esPorCobrar=h.type==='venta'&&h.payment==='porcobrar';
+    var cobroBadge='';
+    if(esPorCobrar && !isAnulada){
+      cobroBadge = h.cobrado
+        ? '<span class="hist-pay" style="background:rgba(46,204,113,0.15);color:#2ECC71">COBRADO'+(h.cobradoMetodo?' - '+PAY_LABELS[h.cobradoMetodo]:'')+'</span>'
+        : '<span class="hist-pay" style="background:rgba(243,156,18,0.15);color:#F39C12">PENDIENTE DE COBRO</span>';
+    }
     return '<div class="hist-card" style="'+(isAnulada?'opacity:.45':'')+'">'
       +'<div class="hist-top"><span class="hist-badge hb-'+h.type+'">'+(TL[h.type]||h.type)+(isAnulada?' (ANULADA)':'')+'</span>'
       +'<div class="hist-meta">'+(h.operator?'<span class="hist-oper">'+h.operator+'</span>':'')
       +(h.payment?'<span class="hist-pay">'+payIcon+PAY_LABELS[h.payment]+'</span>':'')
+      +cobroBadge
       +' <span class="hist-date">'+h.date+'</span></div></div>'
+      +(h.cliente?'<div style="font-size:11px;color:var(--text3);margin-bottom:4px"><i class="ti ti-user" style="vertical-align:-2px;font-size:12px"></i> '+esc(h.cliente)+'</div>':'')
       +'<div class="hist-prods">'+h.items.map(function(i){ return '<b>'+i.name+'</b> '+(i.dose||'')+' x'+i.qty+(i.modified?' ($'+parseFloat(i.price).toFixed(2)+')':''); }).join(' - ')+'</div>'
       +(mods.length?'<div class="hist-comment-box">'+mods.map(function(i){ return '<b>'+i.name+':</b> '+i.comment; }).join('<br>')+'</div>':'')
       +'<div class="hist-footer">'
+      +'<div style="display:flex;gap:8px">'
       +(!isAnulada?'<button onclick="anularOp('+origIdx+')" style="background:transparent;border:1px solid rgba(192,57,43,0.35);color:#E74C3C;padding:4px 12px;border-radius:14px;font-size:10px;font-weight:600;letter-spacing:.5px;cursor:pointer;font-family:Jost,sans-serif"><i class="ti ti-ban" style="vertical-align:-2px;font-size:11px"></i> ANULAR</button>':'<span></span>')
+      +(esPorCobrar && !h.cobrado && !isAnulada?'<button onclick="cobrarOp('+origIdx+')" style="background:transparent;border:1px solid rgba(46,204,113,0.4);color:#2ECC71;padding:4px 12px;border-radius:14px;font-size:10px;font-weight:600;letter-spacing:.5px;cursor:pointer;font-family:Jost,sans-serif"><i class="ti ti-cash-banknote" style="vertical-align:-2px;font-size:11px"></i> MARCAR COBRADO</button>':'')
+      +'</div>'
       +(showM?'<span class="hist-total">$'+parseFloat(h.total).toFixed(2)+' USD</span>':'<span></span>')
       +'</div>'
       +'</div>';
@@ -1770,13 +1895,15 @@ function anularConfirm(){
   }
 
   // Reverse caja effects
+  // Si era una venta "Por Cobrar" ya cobrada, el dinero real esta en cobradoMetodo, no en porcobrar
   var total=parseFloat(h.total)||0;
-  if(h.payment){
-    if(h.type==='venta')      S.caja[h.payment]=(S.caja[h.payment]||0)-total;
-    if(h.type==='compra')     S.caja[h.payment]=(S.caja[h.payment]||0)+total;
-    if(h.type==='devolucion') S.caja[h.payment]=(S.caja[h.payment]||0)+total;
-    if(h.type==='gasto')      S.caja[h.payment]=(S.caja[h.payment]||0)+total;
-    if(h.type==='capital')    S.caja[h.payment]=(S.caja[h.payment]||0)-total;
+  var payKey = (h.type==='venta' && h.payment==='porcobrar' && h.cobrado && h.cobradoMetodo) ? h.cobradoMetodo : h.payment;
+  if(payKey){
+    if(h.type==='venta')      S.caja[payKey]=(S.caja[payKey]||0)-total;
+    if(h.type==='compra')     S.caja[payKey]=(S.caja[payKey]||0)+total;
+    if(h.type==='devolucion') S.caja[payKey]=(S.caja[payKey]||0)+total;
+    if(h.type==='gasto')      S.caja[payKey]=(S.caja[payKey]||0)+total;
+    if(h.type==='capital')    S.caja[payKey]=(S.caja[payKey]||0)-total;
   }
 
   h.anulada=true;
@@ -1787,18 +1914,61 @@ function anularConfirm(){
   saveLocal();
   if(sbClient&&S.online){
     var invRows=S.catalog.map(function(p){ return {product_id:p.id,stock:S.inventory[p.id]||0}; });
-    var cajaRows=PAY_METHODS.map(function(m){ return {method:m,balance:S.caja[m]||0}; });
-    sbRun(sbClient.from('inventory').upsert(invRows,{onConflict:'product_id'}));
-    sbRun(sbClient.from('caja').upsert(cajaRows,{onConflict:'method'}));
-    sbRun(sbClient.from('operations').update({items:h.items,type:h.type,total:h.total}).eq('id',h.id));
-    // Mark as anulada via a JSON field hack: store anulada flag inside items
-    var itemsCopy=JSON.parse(JSON.stringify(h.items));
-    sbRun(sbClient.from('operations').update({items:itemsCopy}).eq('id',h.id));
+    var cajaRows=CAJA_METHODS.map(function(m){ return {method:m,balance:S.caja[m]||0}; });
+    sbRun(sbClient.from('inventory').upsert(invRows,{onConflict:'product_id'}),'inventario');
+    sbRun(sbClient.from('caja').upsert(cajaRows,{onConflict:'method'}),'caja');
+    sbRun(sbClient.from('operations').update({items:h.items,type:h.type,total:h.total}).eq('id',h.id),'anular');
   }
 
   anularCancel();
   renderHist(); updateHeaderStat(); renderInv();
   showToast('Operacion anulada y efectos revertidos');
+}
+
+// ═══════════════════════════════ MARCAR COMO COBRADO ═══════════════════════════════
+var cobrarIdx=null, cobrarMetodo=null;
+function cobrarOp(idx){
+  cobrarIdx=idx; cobrarMetodo=null;
+  var h=S.history[idx];
+  if(!h||h.type!=='venta'||h.payment!=='porcobrar'||h.cobrado){ showToast('Operacion no encontrada'); return; }
+  document.getElementById('cobrar-body').innerHTML=
+    (h.cliente?'Cliente: <b style="color:var(--text)">'+esc(h.cliente)+'</b><br>':'')
+    +'Venta del '+h.date+'<br>'
+    +'Monto a cobrar: <b style="color:#2ECC71">$'+parseFloat(h.total).toFixed(2)+'</b><br><br>'
+    +'<span style="color:#F39C12">Elige la cuenta donde entro el dinero.</span>';
+  PAY_METHODS.forEach(function(m){ var el=document.getElementById('cobrar-pay-'+m); if(el) el.classList.remove('active'); });
+  document.getElementById('cobrar-overlay').classList.add('open');
+}
+function cobrarSelMetodo(m){
+  cobrarMetodo=m;
+  PAY_METHODS.forEach(function(x){ var el=document.getElementById('cobrar-pay-'+x); if(el) el.classList.toggle('active',x===m); });
+}
+function cobrarCancel(){
+  document.getElementById('cobrar-overlay').classList.remove('open');
+  cobrarIdx=null; cobrarMetodo=null;
+}
+function cobrarConfirm(){
+  var h=S.history[cobrarIdx];
+  if(!h||h.cobrado){ cobrarCancel(); return; }
+  if(!cobrarMetodo){ showToast('Elige donde entro el dinero'); return; }
+
+  var total=parseFloat(h.total)||0;
+  S.caja.porcobrar=(S.caja.porcobrar||0)-total;
+  S.caja[cobrarMetodo]=(S.caja[cobrarMetodo]||0)+total;
+
+  h.cobrado=true; h.cobradoMetodo=cobrarMetodo;
+  if(h.items.length){ h.items[0].__cobrado=true; h.items[0].__cobradoMetodo=cobrarMetodo; }
+
+  saveLocal();
+  if(sbClient&&S.online){
+    var cajaRows=CAJA_METHODS.map(function(m){ return {method:m,balance:S.caja[m]||0}; });
+    sbRun(sbClient.from('caja').upsert(cajaRows,{onConflict:'method'}),'caja');
+    sbRun(sbClient.from('operations').update({items:h.items}).eq('id',h.id),'cobro');
+  }
+
+  cobrarCancel();
+  renderHist(); renderCaja();
+  showToast('Venta marcada como cobrada via '+PAY_LABELS[cobrarMetodo]);
 }
 
 // ═══════════════════════════════ CATALOG ═══════════════════════════════
@@ -1828,7 +1998,7 @@ function renderCatalog(){
 // ═══════════════════════════════ CAJA ═══════════════════════════════
 function renderCaja(){
   var el=document.getElementById('caja-balances'); if(!el) return;
-  el.innerHTML=PAY_METHODS.map(function(m){
+  el.innerHTML=CAJA_METHODS.map(function(m){
     var bal=S.caja[m]||0;
     return '<div class="caja-card '+m+'">'
       +'<i class="ti '+PAY_ICONS[m]+' caja-icon" style="color:'+PAY_COLORS[m]+'"></i>'
@@ -1838,6 +2008,7 @@ function renderCaja(){
   }).join('');
   var total=PAY_METHODS.reduce(function(s,m){ return s+(S.caja[m]||0); },0);
   var totEl=document.getElementById('caja-total'); if(totEl) totEl.textContent='$'+total.toFixed(2);
+  var pcEl=document.getElementById('caja-porcobrar-total'); if(pcEl) pcEl.textContent='$'+(S.caja.porcobrar||0).toFixed(2);
   renderXferHist();
 }
 
@@ -1859,7 +2030,7 @@ function doTransfer(){
   syncCajaUp().then(function(){
     // Save transfer to Supabase
     if(sbClient&&S.online){
-      sbRun(sbClient.from('caja_transfers').insert({from_method:from,to_method:to,amount:move,note:note||null}));
+      sbRun(sbClient.from('caja_transfers').insert({from_method:from,to_method:to,amount:move,note:note||null}),'transferencia');
     }
   });
   document.getElementById('xfer-amount').value='';
@@ -1930,7 +2101,19 @@ function toggleForm(formId,btnId,resetLabel){
   if(f.style.display==='none'){ f.style.display='block'; if(b) b.innerHTML='<i class="ti ti-x"></i>Cancelar'; }
   else{ f.style.display='none'; if(b) b.innerHTML='<i class="ti ti-plus"></i>'+resetLabel; }
 }
-function sbRun(promise){ if(promise && promise.then) promise.then(function(){}).catch(function(e){ console.warn('SB:',e); }); }
+function sbRun(promise, label){
+  if(!promise || !promise.then) return promise;
+  return promise.then(function(r){
+    if(r && r.error){
+      console.warn('SB:',label||'sync',r.error);
+      showToast('No se sincronizo'+(label?' ('+label+')':'')+': '+r.error.message);
+    }
+    return r;
+  }).catch(function(e){
+    console.warn('SB:',label||'sync',e);
+    showToast('Error de sincronizacion'+(label?' ('+label+')':'')+'. Se guardo localmente.');
+  });
+}
 
 function addProduct(){
   var name=document.getElementById('np-name').value.trim();
@@ -1942,8 +2125,8 @@ function addProduct(){
   var prod={id:id,name:name,dose:dose||'-',price:price,cost:cost};
   S.catalog.push(prod); S.inventory[id]=0;
   if(sbClient&&S.online){
-    sbRun(sbClient.from('catalog').upsert({id:id,name:name,dose:dose||'-',price:price,cost:cost,sort_order:S.catalog.length},{onConflict:'id'}));
-    sbRun(sbClient.from('inventory').upsert({product_id:id,stock:0},{onConflict:'product_id'}));
+    sbRun(sbClient.from('catalog').upsert({id:id,name:name,dose:dose||'-',price:price,cost:cost,sort_order:S.catalog.length},{onConflict:'id'}),'producto');
+    sbRun(sbClient.from('inventory').upsert({product_id:id,stock:0},{onConflict:'product_id'}),'inventario');
   }
   saveLocal();
   document.getElementById('np-name').value='';
@@ -1970,13 +2153,13 @@ function saveEdit(){
   p.dose=document.getElementById('ep-dose').value.trim();
   p.price=parseFloat(document.getElementById('ep-price').value)||p.price;
   p.cost=parseFloat(document.getElementById('ep-cost').value)||0;
-  if(sbClient&&S.online){ sbRun(sbClient.from('catalog').upsert({id:p.id,name:p.name,dose:p.dose,price:p.price,cost:p.cost},{onConflict:'id'})); }
+  if(sbClient&&S.online){ sbRun(sbClient.from('catalog').upsert({id:p.id,name:p.name,dose:p.dose,price:p.price,cost:p.cost},{onConflict:'id'}),'producto'); }
   saveLocal(); closeEdit(); renderAjustes(); renderInv(); showToast('Producto actualizado');
 }
 function delProduct(i){
   if(!confirm('Eliminar '+S.catalog[i].name+'?')) return;
   var id=S.catalog[i].id;
-  if(sbClient&&S.online){ sbRun(sbClient.from('catalog').update({active:false}).eq('id',id)); }
+  if(sbClient&&S.online){ sbRun(sbClient.from('catalog').update({active:false}).eq('id',id),'producto'); }
   S.catalog.splice(i,1); saveLocal(); renderAjustes(); showToast('Producto eliminado');
 }
 
@@ -1987,14 +2170,14 @@ function addOperator(){
   if(!name){ showToast('Escribe el nombre del operador'); return; }
   if(S.operators.indexOf(name)>=0){ showToast('Ya existe ese operador'); return; }
   S.operators.push(name);
-  if(sbClient&&S.online){ sbRun(sbClient.from('operators').upsert({name:name,active:true},{onConflict:'name'})); }
+  if(sbClient&&S.online){ sbRun(sbClient.from('operators').upsert({name:name,active:true},{onConflict:'name'}),'operador'); }
   saveLocal(); if(inp) inp.value='';
   renderAjustes(); renderOperChips(); showToast('Operador agregado');
 }
 function delOperator(i){
   if(!confirm('Eliminar '+S.operators[i]+'?')) return;
   var name=S.operators[i];
-  if(sbClient&&S.online){ sbRun(sbClient.from('operators').update({active:false}).eq('name',name)); }
+  if(sbClient&&S.online){ sbRun(sbClient.from('operators').update({active:false}).eq('name',name),'operador'); }
   S.operators.splice(i,1); saveLocal(); renderAjustes(); renderOperChips(); showToast('Operador eliminado');
 }
 
@@ -2101,16 +2284,16 @@ function renderDashboard(){
     });
   }
 
-  // ── PAYMENT DONUT (30d) ──
+  // ── PAYMENT DONUT (30d) ── (incluye "Por Cobrar" como su propio segmento)
   var byPay={};
-  PAY_METHODS.forEach(function(m){ byPay[m]=0; });
+  CAJA_METHODS.forEach(function(m){ byPay[m]=0; });
   S.history.forEach(function(h){
     if(h.type!=='venta'||!h.payment) return;
     if(new Date(h.id) < days30) return;
     byPay[h.payment]=(byPay[h.payment]||0)+parseFloat(h.total||0);
   });
   var payLabels=[], payData=[], payColors=[];
-  PAY_METHODS.forEach(function(m){
+  CAJA_METHODS.forEach(function(m){
     if(byPay[m]>0){ payLabels.push(PAY_LABELS[m]); payData.push(byPay[m]); payColors.push(PAY_COLORS[m]); }
   });
   var ctx2=document.getElementById('chart-pay');
@@ -2337,13 +2520,13 @@ function renderFinanzas(){
   var payEl=document.getElementById('fin-pay-breakdown');
   if(payEl){
     var byPay={};
-    PAY_METHODS.forEach(function(m){ byPay[m]=0; });
+    CAJA_METHODS.forEach(function(m){ byPay[m]=0; });
     ventas.forEach(function(h){ if(h.payment) byPay[h.payment]=(byPay[h.payment]||0)+parseFloat(h.total||0); });
-    var hasAny=PAY_METHODS.some(function(m){ return byPay[m]>0; });
+    var hasAny=CAJA_METHODS.some(function(m){ return byPay[m]>0; });
     if(!hasAny){
       payEl.innerHTML='<div style="font-size:12px;color:var(--text3);text-align:center;padding:8px">Sin ventas en este periodo</div>';
     } else {
-      payEl.innerHTML=PAY_METHODS.map(function(m){
+      payEl.innerHTML=CAJA_METHODS.map(function(m){
         if(byPay[m]===0) return '';
         var pct=totVentas>0?Math.round(byPay[m]/totVentas*100):0;
         var amtStyle='font-size:15px;color:'+PAY_COLORS[m]+';font-weight:500';
